@@ -1,0 +1,268 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/js" href="js/bootstrap.min.js">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <title>Trang chủ</title>
+    <style type="text/css">
+        .example {
+            margin: 20px;
+        }
+    </style>
+</head>
+
+<script>
+    $('document').ready(function () {
+        $('#btnTru').click(function () {
+            var a = $('#giaDau').val()
+            $.ajax({
+                url: '/daugia/' + a + '/-',
+                method: 'get',
+                success(data) {
+                    var gia = parseInt(data)
+                    $('#giaDau').val(gia)
+                },
+                error(err) {
+                    $('#giaDau').val(err)
+                },
+            })
+        });
+        $('#btnCong').click(function () {
+            var a = $('#giaDau').val()
+            $.ajax({
+                url: '/daugia/' + a + '/+',
+                method: 'get',
+                success(data) {
+                    var gia = parseInt(data)
+                    $('#giaDau').val(gia)
+                },
+                error(err) {
+                    $('#giaDau').val(err)
+                },
+            })
+        });
+    });
+</script>
+
+<body>
+    <!-- header -->
+    <div class="logo_products">
+        <div class="container">
+            <div class="w3ls_logo_products_left">
+                <h1>
+                    <a href="home"></a>
+                </h1>
+            </div>
+
+            <div class="clearfix"> </div>
+        </div>
+    </div>
+    <!--menu-->
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+
+                <a class="navbar-brand" href="home">
+                    <i class="fa fa-home x2"></i> Trang chủ</a>
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a class="navbar-brand" href="congNghe"> Công nghệ</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="thoiTrang"> Thời trang</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="doGiaDung">Đồ gia dụng</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="sub-menu">
+                        <a class="navbar-brand" href="">
+                            <i class="fa fa-user"></i> User</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="shopping">
+                            <i class="fa fa-shopping-cart"></i> Giỏ Hàng</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="daugiacuatoi">
+                            <i class="fa fa-gavel"></i> Đấu giá của tôi</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="">Đăng xuất</a>
+                    </li>
+                </ul>
+
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <!-- -->
+
+    <div class="clearfix"> </div>
+
+    <!--    Danh SÁCH HOT       !-->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <!--    Danh SÁCH HOT       !-->
+                <div class="panel panel-default">
+                    <div class="navigat">
+
+                        <h2> Tên sản phẩm </h2>
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="col-sm-3 col-md-3">
+                            <div class="thumbnail" style="height:350px">
+                                <img src="./img/004.jpg" width="300px" hight="350px">
+                            </div>
+                        </div>
+                        <div class="col-sm-9 col-md-9">
+                            <div class="thumbnail" style="height:350px">
+                                <div class="caption" aligint="center">
+                                    <h4> Kết thúc trong: </h4>
+                                    <h2>
+                                        <span style="color: red">
+                                            <strong> 00:50 </strong>
+                                        </span>
+                                    </h2>
+
+                                    <h4> Giá thầu hiện tại: </h4>
+                                    <h2>
+                                        <span style="color: black">
+                                            <strong> 54k </strong>
+                                        </span>
+                                    </h2>
+                                    <p>
+                                        <h4> Đấu giá ngay: </h4>
+                                        <div class="input-group">
+                                            <span class="input-group-btn">
+                                                <button type="button" id="btnTru" class="btn btn-danger btn-number" data-type="minus" data-field="quant">
+                                                    <span class="glyphicon glyphicon-minus"></span>
+                                                </button>
+                                            </span>
+                                            <input id="giaDau" class="form-control input-number" value="1" type="text" style="width: 50px">
+                                            <button type="button" id="btnCong" class="btn btn-success btn-number" data-type="plus" data-field="quant">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </button>
+                                        </div>
+                                        <br>
+                                        <a href="#" class="btn btn-default" role="button"> Đấu Giá Ngay</a>
+                                    </p>
+                                    <h4> Người thắng hiện tại:
+                                        <span> abc </span>
+                                    </h4>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--        ---END------``!-->
+
+                <!--    Phần dưới lịch sử đấu giá       !-->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+
+                        <h3> Lịch sử đấu giá </h3>
+                    </div>
+                    <div class="panel-body">
+
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="col-sm-4"> Tài khoản</th>
+                                    <th class="col-sm-2">Giá dự thầu</th>
+                                    <th class="col-sm-2">Thời gian đấu giá</th>
+                                </tr>
+                            </thead>
+
+
+                            <form method="POST" action="#" id="#">
+                                <td>&nbsp;</td>
+                                <td>
+                                    <h4> VNĐ </h4>
+                                </td>
+                                <td>&nbsp;</td>
+                        </table>
+
+                    </div>
+                </div>
+                <!--        ---END------``!-->
+
+                <!--    Phần dưới chi tiết thông tin       !-->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+
+                        <h3> Thông tin sản phẩm </h3>
+                    </div>
+                    <div class="panel-body">
+                        <span>
+                            <p> Chi tiết sản phẩm</p>
+                            Phiên đấu giá số 127070195 Sản phẩm số 43-577 Mô tả sản phẩm Chuẩn bị cho các bữa ăn gia đình với chảo rán ! Đấu giá ngay!
+                            Thông số kỹ thuật: - Chảo đa năng chuyên dành để chiên rán,v..v... - Được làm bằng inox chất
+                            lượng cao, tráng bằng lớp phủ không dính, bền đẹp - Thiết kế hiện đại, dễ sử dụng. Có thể sử
+                            dụng với bếp điện từ. - Sản phẩm không dễ bị cháy, lòng chảo có thiết kế khoa học, giữ nhiệt
+                            và dinh dưỡng của thực phẩm. - Lòng chảo có dáng cong, dễ dàng sử dụng và vệ sinh. - Kích thước:
+                            12 "
+                        </span>
+                    </div>
+                </div>
+                <!--        ---END------``!-->
+
+
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+
+    <footer class="panel-footer">
+        <hr>
+        <div class="text-center center-block">
+            <p class="txt-railway">- GARDEN.COM -</p>
+            <p class="txt-railway">Hân hạnh phục vụ quý khách tận tình</p>
+            <br />
+            <a href="https://www.facebook.com/cushygarden/">
+                <i id="social-fb" class="fa fa-facebook-square fa-3x social"></i>
+            </a>
+            <a href="https://https://www.facebook.com/cushygarden/">
+                <i id="social-tw" class="fa fa-twitter-square fa-3x social"></i>
+            </a>
+            <a href="https://https://www.facebook.com/cushygarden/">
+                <i id="social-gp" class="fa fa-google-plus-square fa-3x social"></i>
+            </a>
+            <a href="mailto:betu4497@gmail.com">
+                <i id="social-em" class="fa fa-envelope-square fa-3x social"></i>
+            </a>
+        </div>
+        <hr>
+    </footer>
+
+
+
+
+    <script src="js/jquery.js" type="text/javascript"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script type="text/html" src="js/jquery-2.1.4.min"></script>
+    <script type="text/html" src="bootstrap-3.3.4-dist/bootstrap.min.js"></script>
+    <script type="text/html" src="bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+</body>
+
+>>>>>>> a7e3aeb6e00471d56af40de5c23f5604d0933e4b:garden/chitietsp.html
+
+</html>
