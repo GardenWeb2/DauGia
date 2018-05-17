@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <title>Trang chủ</title>
+    <title>Sản phẩm đang đấu giá</title>
     <style type="text/css">
         .example {
             margin: 20px;
@@ -20,27 +20,66 @@
 
 <script>
     $(document).ready(() => {
-        for (let id = 1; id < 6; id++) {
-            $('.sp_congnghe').append(
-                '<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/congnghe/00' +
-                id +
-                '.jpg" width="300" hight="300"><div class="caption"><h3> B </h3>Thời gian:      <strong> 00:30 </strong><br> Giá:<span style="color: red"> VNĐ</span></br>   <a href="chitiet" class="btn btn-default" role="button"> Đấu Giá Ngay</a>                                   </p>          </div>             </div>                 </div>'
+        $.ajax({
+            url: '/load/sp_congnghe',
+            method: 'get',
+            success(data) {
+                data.forEach(x => {
+                    $('.sp_congnghe').append(
+                `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/`
+                 + x.hinhanh +
+                `" width="300" hight="300"><div class="caption"><h3>` + x.info + `</h3>Thời gian:      <strong>`
+                     + x.thoigiandau + `</strong><br> Giá:<span style="color: red">`
+                     + x.giahientai + "K" + `</span></br>   </p></div></div></div>`
             )
-        }
-        for (let id = 1; id < 6; id++) {
-                $('.sp_thoitrang').append(
-                    '<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/thoitrang/00' +
-                    id +
-                    '.jpg" width="300" hight="300"><div class="caption"><h3> B </h3>Thời gian:      <strong> 00:30 </strong><br> Giá:<span style="color: red"> VNĐ</span></br>   <a href="chitiet" class="btn btn-default" role="button"> Đấu Giá Ngay</a>                                   </p>          </div>             </div>                 </div>'
-                )
-        }
-        for (let id = 1; id < 9; id++) {
-            $('.sp_dogiadung').append(
-                '<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/dogiadung/00' +
-                id +
-                '.jpg" width="300" hight="300"><div class="caption"><h3> B </h3>Thời gian:      <strong> 00:30 </strong><br> Giá:<span style="color: red"> VNĐ</span></br>   <a href="chitiet" class="btn btn-default" role="button"> Đấu Giá Ngay</a>                                   </p>          </div>             </div>                 </div>'
-            )
-        }
+                });
+            },
+            error(err) {
+                $('.sp_congnghe').status(404)
+            },
+        })   
+        $.ajax({
+            url: '/load/sp_thoitrang',
+            method: 'get',
+            success(data) {
+                data.forEach(x => {
+                    $('.sp_thoitrang').append(
+                        `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
+                        x.hinhanh +
+                        `" width="300" hight="300"><div class="caption"><h3>` +
+                        x.info + `</h3>Thời gian:      <strong>` +
+                        x.thoigiandau +
+                        `</strong><br> Giá:<span style="color: red">` +
+                        x.giahientai + "K" +
+                        `</span></br>   </p></div></div></div>`
+                    )
+                });
+            },
+            error(err) {
+                $('.sp_thoitrang').status(404)
+            },
+        })
+        $.ajax({
+            url: '/load/sp_dogiadung',
+            method: 'get',
+            success(data) {
+                data.forEach(x => {
+                    $('.sp_dogiadung').append(
+                        `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
+                        x.hinhanh +
+                        `" width="300" hight="300"><div class="caption"><h3>` +
+                        x.info + `</h3>Thời gian:      <strong>` +
+                        x.thoigiandau +
+                        `</strong><br> Giá:<span style="color: red">` +
+                        x.giahientai + "K" +
+                        `</span></br>   </p></div></div></div>`
+                    )
+                });
+            },
+            error(err) {
+                $('.sp_dogiadung').status(404)
+            },
+        })
     })
 </script>
 
@@ -106,7 +145,7 @@
                 <div class="panel panel-default">
                     <div class="navigat">
 
-                        <h2>Sản phẩm đang hot</h2>
+                        <h2>Sản phẩm công nghệ</h2>
                     </div>
                     <div class="panel-body sp_congnghe">
 

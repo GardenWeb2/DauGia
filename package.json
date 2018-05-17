@@ -18,6 +18,7 @@
   "homepage": "https://github.com/GardenWeb2/DauGia#readme",
   "dependencies": {
     "express": "^4.16.3",
+    "pg": "^7.4.1",
     "templatesjs": "^2.0.0"
   }
 }

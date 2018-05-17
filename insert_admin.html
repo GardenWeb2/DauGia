@@ -9,13 +9,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <title>Trang chủ</title>
+    <title>Thêm sản phẩm</title>
     <style type="text/css">
         .example {
             margin: 20px;
         }
     </style>
 </head>
+
+<script>
+    $(document).ready(() => {
+        $('#submit').click(function () {
+            var ten = $('#ProName').val();
+            var gia = $('#Price').val();
+            var checkbox = document.getElementsByName("loaisp");
+            var loai = 1;
+            for (var i = 0; i < checkbox.length; i++) {
+                if (checkbox[i].checked === true) {
+                    var loai = checkbox[i].value;
+                }
+            }
+            var tgbd = $('#thoigianbd').val();
+            var tgdau = $('#thoigiandau').val();
+            var mota = $('#FullDes').val();
+            var img = $('#idImage').val();
+
+            $.ajax({
+                url: '/createProduct',
+                method: 'get',
+                data: {
+                    tensp: ten,
+                    giatien: gia,
+                    phanloai: loai,
+                    thoigianbd: tgbd,
+                    thoigiandau: tgdau,
+                    chitiet: mota,
+                    hinhanh: img
+                },
+                success(data) {
+                    $('.thongbao').append(data)
+
+                },
+                error(err) {
+                    $('.thongbao').status(404)
+                },
+            })
+        })
+    })
+</script>
 
 <body>
     <!-- header -->
@@ -77,65 +118,71 @@
 
                     <h2>Thêm sản phẩm</h2>
                 </div>
-                
-                     <div class="row"> <br>
-                         <label class="control-label col-sm-2 text-info">Tên sản phẩm:</label>
-                         <div class="col-sm-7">
-                             <input id="ProName" name="ProName" type="text" placeholder="Tên sản phẩm"/>
-                         </div>
-                     </div></br>
-                     
-                     <div class="row">
-                         <label class="control-label col-sm-2 text-info">Số Lượng:</label>
-                         <div class="col-sm-7">
-                             <input id="Quantity" name="Quantity" type="text" placeholder="Số lượng">
-                         </div>
-                     </div></br>
 
-                     <div class="row">
-                         <label class="control-label col-sm-2 text-info">Giá: </label>
-                         <div class="col-sm-7 ">
-                             <input id="Price" name="Price" type="text" placeholder="Giá">
-                         </div>
-                     </div></br>
+                <div class="row">
+                    <br>
+                    <label class="control-label col-sm-2 text-info">Tên sản phẩm:</label>
+                    <div class="col-sm-7">
+                        <input id="ProName" name="ProName" type="text" placeholder="Tên sản phẩm" />
+                    </div>
+                </div>
+                </br>
 
-                     <div class="row">
-                         <label class="control-label col-sm-2 text-info">Phân Loại:</label>
-                         <div class="col-sm-7">
-                          <!--   @foreach($get_inf as $item) 
-                             <input id="type" name="type" type="radio" value="{{$item->TypeName}}" > {{$item->TypeName}}
-                             @endforeach
-                          -->
-                          <input id="type" name="type" type="radio" value="congnghe" > Công Nghệ
-                          <input id="type" name="type" type="radio" value="thoitrang" > Thời Trang
-                          <input id="type" name="type" type="radio" value="dogiadung" > Đồ Gia Dụng 
-                         </div>
-                     </div></br>
-                     
-                     <div class="row">
-                            <label class="control-label col-sm-2 text-info">Thời gian đấu giá: </label>
-                            <div class="col-sm-7 ">
-                                <input id="Price" name="Price" type="text" placeholder="Thời gian đấu giá">
-                            </div>
-                        </div></br>
+                <div class="row">
+                    <label class="control-label col-sm-2 text-info">Giá: </label>
+                    <div class="col-sm-7 ">
+                        <input id="Price" name="Price" type="text" placeholder="Giá">
+                    </div>
+                </div>
+                </br>
 
-                     <div class="row">
-                         <label class="control-label col-sm-2 text-info">Chi tiết :</label>
-                         <div class="col-sm-3">
-                             <textarea class="form-control" id="FullDes" name="FullDes" type="text-area" placeholder="chi tiết đầy đủ"></textarea>
-                         </div>
-                     </div></br>
-                     <div class="row">
-                         <label class="control-label col-sm-2 text-info">Hình ảnh:</label>
-                         <div class="col-sm-7">
-                                
-                                <input type="file" name="image" id ="idImage">
-                                
-                         </div>
-                     </div></br>
-                     <hr/>
-                         <button id="submit" name="submit" type="submit" class="col-lg-offset-2 btn btn-success">Thêm </button>
-                
+                <div class="row">
+                    <label class="control-label col-sm-2 text-info">Phân Loại:</label>
+                    <div class="col-sm-7">
+                        <input name="loaisp" type="radio" value="1" checked> Công Nghệ
+                        <input name="loaisp" type="radio" value="2"> Thời Trang
+                        <input name="loaisp" type="radio" value="3"> Đồ Gia Dụng
+                    </div>
+                </div>
+                </br>
+
+                <div class="row">
+                    <label class="control-label col-sm-2 text-info">Thời gian mở đấu giá: </label>
+                    <div class="col-sm-7 ">
+                        <input id="thoigianbd" name="thoigianbd" type="text" placeholder="Thời gian mở đấu giá">
+                    </div>
+                </div>
+                </br>
+
+                <div class="row">
+                    <label class="control-label col-sm-2 text-info"> Khoảng thời gian đấu giá: </label>
+                    <div class="col-sm-7 ">
+                        <input id="thoigiandau" name="thoigiandau" type="text" placeholder="Khoảng thời gian đấu giá">
+                    </div>
+                </div>
+                </br>
+
+                <div class="row">
+                    <label class="control-label col-sm-2 text-info">Chi tiết :</label>
+                    <div class="col-sm-3">
+                        <textarea class="form-control" id="FullDes" name="FullDes" type="text-area" placeholder="chi tiết đầy đủ"></textarea>
+                    </div>
+                </div>
+                </br>
+                <div class="row">
+                    <label class="control-label col-sm-2 text-info">Hình ảnh:</label>
+                    <div class="col-sm-7">
+
+                        <input type="file" name="image" id="idImage">
+
+                    </div>
+                </div>
+                </br>
+                <hr/>
+                <button id="submit" name="submit" type="button" class="col-lg-offset-2 btn btn-success">Thêm </button>
+
+                <p class="thongbao"> </p>
+
 
             </div>
         </div>
@@ -163,12 +210,12 @@
         <hr>
     </footer>
     <script>
-            $('document').ready(function () {
-                 $('#submit').click(function () {
-                    console.log( $('#idImage').val())
-                 })
-                 
+        $('document').ready(function () {
+            $('#submit').click(function () {
+                console.log($('#idImage').val())
             })
+
+        })
     </script>
 
 

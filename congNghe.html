@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <title>Trang chủ</title>
+    <title>Công nghệ</title>
     <style type="text/css">
         .example {
             margin: 20px;
@@ -19,13 +19,24 @@
 
 <script>
     $(document).ready(() => {
-        for (let id = 1; id < 6; id++) {
-            $('.sp_congnghe').append(
-                '<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/congnghe/00' +
-                id +
-                '.jpg" width="300" hight="300"><div class="caption"><h3> B </h3>Thời gian:      <strong> 00:30 </strong><br> Giá:<span style="color: red"> VNĐ</span></br>   <a href="chitiet" class="btn btn-default" role="button"> Đấu Giá Ngay</a>                                   </p>          </div>             </div>                 </div>'
+        $.ajax({
+            url: '/load/sp_congnghe',
+            method: 'get',
+            success(data) {
+                data.forEach(x => {
+                    $('.sp_congnghe').append(
+                `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/`
+                 + x.hinhanh +
+                `" width="300" hight="300"><div class="caption"><h3>` + x.info + `</h3>Thời gian:      <strong>`
+                     + x.thoigiandau + `</strong><br> Giá:<span style="color: red">`
+                     + x.giahientai + "K" + `</span></br>   <a href="/` + x.masp + `" class="btn btn-default" role="button"> Đấu Giá Ngay</a></p></div></div></div>`
             )
-        }
+                });
+            },
+            error(err) {
+                $('.sp_congnghe').status(404)
+            },
+        })   
     })
 </script>
 
@@ -92,11 +103,10 @@
 
     <div class="clearfix"> </div>
 
-    <!--    Danh SÁCH HOT       !-->
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <!--    Danh SÁCH HOT       !-->
+                <!--    Danh SÁCH công nghệ       !-->
                 <div class="panel panel-default">
                     <div class="navigat">
 

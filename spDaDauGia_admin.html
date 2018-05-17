@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <title>Trang chủ</title>
+    <title>Sản phẩm đã đấu giá</title>
     <style type="text/css">
         .example {
             margin: 20px;
@@ -17,59 +17,87 @@
     </style>
 </head>
 
+<script>
+    $(document).ready(() => {
+        //  <td>` + x.nguoithang + `</td> 
+        $(document).ready(() => {
+            $.ajax({
+                url: '/load/sp_dadaugia',
+                method: 'get',
+                success(data) {
+                    var stt = 1
+                    data.forEach(x => {
+                        $('tbody').append(
+                            ` <tr>
+                                    <td>` + stt + `</td>
+                                    <td>` + x.info + `</td>
+                                    <td>` + x.giahientai + `</td>
+                                     
+                                </tr> `
+                        )
+                        stt = stt +1
+                    });
+                },
+                error(err) {
+                    $('.tbody').status(404)
+                },
+            })
+        })
+    })
+</script>
+
 <body>
-        <!-- header -->
-        <div class="logo_products">
-            <div class="container">
-                <div class="w3ls_logo_products_left">
-                    <h1>
-                        <a href="home_admin"></a>
-                    </h1>
-                </div>
-    
-                <div class="clearfix"> </div>
+    <!-- header -->
+    <div class="logo_products">
+        <div class="container">
+            <div class="w3ls_logo_products_left">
+                <h1>
+                    <a href="home_admin"></a>
+                </h1>
             </div>
+
+            <div class="clearfix"> </div>
         </div>
-        <!--menu-->
-        <nav class="navbar navbar-default" role="navigation">
-            <div class="container-fluid">
-    
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li>
-                            <a class="navbar-brand" href="themsp">Thêm sản phẩm</a>
-                        </li>
-                        <li>
-                            <a class="navbar-brand" href="spDangDauGia">Đang đấu giá</a>
-                        </li>
-                        <li>
-                            <a class="navbar-brand" href="spDaDauGia">Đã đấu giá</a>
-                        </li>
-                        <li>
-                            <a class="navbar-brand" href="spKhongDauGia">Không đấu giá</a>
-                        </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>
-                            <a class="navbar-brand" href="">
-                                <i class="fa fa-key"></i> Admin</a>
-                        </li>
-                        <li>
-                            <a class="navbar-brand" href="">Đăng xuất</a>
-                        </li>
-                    </ul>
-    
-                </div>
-                <!-- /.navbar-collapse -->
+    </div>
+    <!--menu-->
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a class="navbar-brand" href="themsp">Thêm sản phẩm</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="spDangDauGia">Đang đấu giá</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="spDaDauGia">Đã đấu giá</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="spKhongDauGia">Không đấu giá</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a class="navbar-brand" href="">
+                            <i class="fa fa-key"></i> Admin</a>
+                    </li>
+                    <li>
+                        <a class="navbar-brand" href="">Đăng xuất</a>
+                    </li>
+                </ul>
+
             </div>
-            <!-- /.container-fluid -->
-        </nav>
-        <!-- -->
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <!-- -->
 
     <div class="clearfix"> </div>
 
-    <!--    Danh SÁCH HOT       !-->
     <div class="container">
         <div class="row">
             <div class="panel panel-default">
@@ -83,28 +111,11 @@
                             <th>STT</th>
                             <th>Tên sản phẩm</th>
                             <th>Giá bán</th>
-                            <th>Người mua</th>
-                            <th>Thời gian</th>
+                            <!-- <th>Người mua</th> -->
 
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-
-                        </tr>
 
                     </tbody>
                 </table>
