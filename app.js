@@ -23,7 +23,7 @@ app.get('/login', (req, res) => {
     res.sendfile('login.html')
 })
 
-app.get('/home', (req, res) => {
+app.get('/index', (req, res) => {
     res.sendfile('index.html')
 })
 //Load Trang Sp HOT là sp có số lần đấu giá nhiều nhất -> sắp GIẢM 10 sp đầu tiên
@@ -77,9 +77,6 @@ app.get('/load/sp_hettg', (req, res)=>{
      });
 })
 
-app.get('/congNghe', (req, res) => {
-    res.sendfile('congNghe.html')
-})
 //Load Trang Sp CÔNG NGHỆ là sp thuộc loại Công nghệ
 app.get('/load/sp_congnghe', (req, res)=>{
     pool.connect(function(err,client,done) {
@@ -104,9 +101,6 @@ app.get('/load/sp_congnghe', (req, res)=>{
      });
 })
 
-app.get('/thoiTrang', (req, res) => {
-    res.sendfile('thoiTrang.html')
-})
 //Load Trang Sp CÔNG NGHỆ là sp thuộc loại Công nghệ
 app.get('/load/sp_thoitrang', (req, res)=>{
     pool.connect(function(err,client,done) {
@@ -131,9 +125,7 @@ app.get('/load/sp_thoitrang', (req, res)=>{
      });
 })
 
-app.get('/doGiaDung', (req, res) => {
-    res.sendfile('doGiaDung.html')
-})
+//Load Trang Sp ĐỒ GIA DỤNG là sp thuộc loại do gia dung
 app.get('/load/sp_dogiadung', (req, res)=>{
     pool.connect(function(err,client,done) {
         if(err){
@@ -166,10 +158,115 @@ app.get('/daugiacuatoi', (req, res) => {
     res.sendfile('daugiacuatoi.html')
 })
 
+// Chi tiết sản phẩm
+app.get('/load/chitiet/:id', (req, res) => {
+    var id_sp = parseInt(req.params['id'])
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`SELECT s.*, p.*, t.giatri
+                    FROM sanpham s, phiendaugia p, thamso t
+                    WHERE s.masp = ` + id_sp + ` and s.masp = p.masp and t.tenthamso = 'delta so tien'`
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            res.json(result.rows)
+        });
+     });
+})
+///--------------//////
+app.get('/daugia/:a/:b/:c/:d', (req, res) => {
+    var gia = parseInt(req.params['a'])
+    var pheptinh = req.params['b']
+    var giathau = parseInt(req.params['c'])
+    var delta = parseInt(req.params['d'])
+    if( pheptinh == 'tru' &&  gia > giathau)
+        gia = gia - delta
+    else if( pheptinh == 'cong')
+        gia = gia + delta
+    if( gia < 1)
+        gia = 1
+    // Gui tra ve cho client du lieu ma Server da xu li
+    // vi khi tra ve cho client luon phai la dang chuoi,
+    // khong duoc la kieu so nen se tien hanh ep kieu
+    res.send(gia.toString())
+})
 
-// app.get('/chitiet', (req, res) => {
-//     res.sendfile('chitietsp.html')
-// })
+// Thực hiện đấu giá
+app.get('/create_update_PhieuDG', (req, res)=>{
+    var maphien =  parseInt(req.query.maphien)
+    // var masp =  parseInt(req.query.masp)
+    var matk =  parseInt(req.query.matk)
+    var giadau =  parseInt(req.query.giadau)
+    var tinhtrangphieu =  parseInt(req.query.matinhtrang)
+    var maphieu = 0
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        }
+              
+        client.query(`SELECT p.*
+                    FROM phieudaugia p
+                    WHERE p.maphiendg = ` + maphien + ` and p.matk = ` + matk + ``
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            var check = result.rowCount
+            console.log(check)
+            if(check != '0'){
+                // khi tk này đã đấu giá sp này rồi thì trong phieudg sp của tk này là update giá và tình trạng
+                maphieu = parseInt(result.rows[0].maphieudg)
+               
+                client.query(`update phieudaugia
+                              set giadau =`+ giadau + `, matinhtrang =` + tinhtrangphieu +
+                             `where maphieudg = `+ maphieu)
+            }
+            else{
+                // khi tk này chưa đấu giá sp này thì ta tạo 1 phiếudg sp này cho tk hiện tại
+                client.query(`insert into phieudaugia(maphiendg,matk,giadau,matinhtrang)
+                            values(`+ maphien + `,'`+ matk +`','` + giadau + `',` + tinhtrangphieu + `)`)
+                // lấy được maphieudg vừa đc random ở postgre => SAI chưa làm đc
+                // client.query(`SELECT p.*
+                //             FROM phieudaugia p
+                //             WHERE p.maphiendg = ` + maphien + ` and p.matk = ` + matk + ``   
+                // ,function(err,result) {
+                //     done(); 
+                //     maphieu = parseInt(result.rows[0].maphieudg)
+                // });         
+            }    
+            console.log("maphieu:" + maphieu)
+            console.log("MAPHIEN:" + maphien)
+            //update lại tình trạng của các tài khoản khác cũng đấu giá sản phẩm này thành dg không thành công
+            client.query(`update phieudaugia
+                              set matinhtrang = 2
+                             where maphiendg = `+ maphien + ` and matk != `+ matk )
+
+            // update lại giá hiện tại khi 1 tk nâng giá lên của sp trong phiendaugia + maphieudauthang la maphieu hiện tại
+            client.query(`update phiendaugia
+                        set giahientai =`+ giadau +  
+                        `where maphiendg = `+ maphien) 
+            client.query(`SELECT p.*
+                    FROM phiendaugia p
+                    WHERE p.maphiendg =` + maphien
+            ,function(err,result) {
+                res.json(result.rows[0])
+            });
+        });
+     });
+})
 
 
 //          ADMIN       //
@@ -279,53 +376,8 @@ app.get('/createProduct', (req, res)=>{
 })
 
 
-///--------------//////
-app.get('/daugia/:a/:b/:c/:d', (req, res) => {
-    var gia = parseInt(req.params['a'])
-    var pheptinh = req.params['b']
-    var giathau = parseInt(req.params['c'])
-    var delta = parseInt(req.params['d'])
-    if( pheptinh == '-' &&  gia > giathau)
-        gia = gia - delta
-    else if( pheptinh == '+')
-        gia = gia + delta
-    if( gia < 1)
-        gia = 1
-    // Gui tra ve cho client du lieu ma Server da xu li
-    // vi khi tra ve cho client luon phai la dang chuoi,
-    // khong duoc la kieu so nen se tien hanh ep kieu
-    res.send(gia.toString())
-})
 
-//  TRANG CHI TIẾT PHẢI ĐỂ SAU CÙNG VÌ KHI CHẠY TỪ TRÊN XUỐNG DƯỚI mã_sp CHƯA ĐƯỢC GÁN GIÁ TRỊ
-// NẾU ĐỂ BÊN TRÊN SẼ LÀM CÁC TRANG NẰM DƯỚI phần này LỖI
-var id_sp;
-app.get('/:id', (req, res) => {
-    id_sp = parseInt(req.params['id'])
-    res.sendfile('chitietsp.html')
-})
-app.get('/load/chitiet', (req, res) => {
-    console.log("ID la: " + id_sp);
-    pool.connect(function(err,client,done) {
-        if(err){
-            console.log("not able to get connection "+ err);
-            res.status(400).send(err);
-        } 
-        client.query(`SELECT s.*, p.*, t.giatri
-                    FROM sanpham s, phiendaugia p, thamso t
-                    WHERE s.masp = ` + id_sp + ` and s.masp = p.masp and t.tenthamso = 'delta so tien'`
-        ,function(err,result) {
-           //call `done()` to release the client back to the pool
-            done(); 
-            if(err){
-                res.end();
-                console.log(err);
-                res.status(400).send(err)
-            }
-            res.json(result.rows)
-        });
-     });
-    //res.json(id_sp)
-})
+
+
 
 app.listen(3000, () => console.log("Success"))

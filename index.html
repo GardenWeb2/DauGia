@@ -7,9 +7,13 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="font-awesome-4.4.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/js" href="js/bootstrap.min.js">
+    <link rel="stylesheet" type="text/font" href="font-awesome-4.4.0/fonts/fontawesome-webfont.woff2">
+    <link rel="stylesheet" type="text/font" href="font-awesome-4.4.0/fonts/fontawesome-webfont.woff">
+    <link rel="stylesheet" type="text/font" href="font-awesome-4.4.0/fonts/fontawesome-webfont.ttf">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="../js/jquery-3.2.1.min.js"></script>
     <title>Trang chủ</title>
     <style type="text/css">
         .example {
@@ -18,133 +22,61 @@
     </style>
 </head>
 
-<!--
-<script>
-    $('document').ready(function () {
-        $('#idHome').click(function () {
-            
-            $.ajax({
-                url: '/home',
-                method: 'get',
-                success(data) {
-                    $('document').text(data)
-                },
-                error(err) {
-                    $('#result').text(err)
-                },
-            })
-        });
-    });
-</script>   -->
 
-<script>
-    $(document).ready(() => {
-        $.ajax({
-            url: '/load/sp_hot',
-            method: 'get',
-            success(data) {
-                data.forEach(x => {
-                    function intervalFunc() {
-                        console.log(x.thoigiandau);
-                        //x.thoigiandau--;
-                    }
-                    setInterval(intervalFunc, 1000)
-                    $('.sp_hot').append(
-                        `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                        x.hinhanh +
-                        `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                        `</h3>Thời gian:      <strong>` +
-                            
-                        x.thoigiandau 
 
-                        + `</strong><br> Giá:<span style="color: red">` +
-                        x.giahientai + "K" +
-                        `</span></br>   
-                        <a href="/` + x.masp + `" class="btn-default btn" role="button"> Đấu Giá Ngay</a></p></div></div></div>`
-                    ) ///` + x.id + `
-                });
-            },
-            error(err) {
-                $('.sp_hot').status(404)
-            },
-        })
-
-        $.ajax({
-            url: '/load/sp_hettg',
-            method: 'get',
-            success(data) {
-                data.forEach(x => {
-                    $('.sp_hettg').append(
-                        `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                        x.hinhanh +
-                        `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                        `</h3>Thời gian:      <strong>` +
-                        x.thoigiandau + `</strong><br> Giá:<span style="color: red">` +
-                        x.giahientai + "K" +
-                        `</span></br>   <a href="/` + x.masp + `" class="btn btn-default" role="button"> Đấu Giá Ngay</a></p></div></div></div>`
-                    )
-                });
-            },
-            error(err) {
-                $('.sp_hettg').status(404)
-            },
-        })
-    })
-</script>
 
 <body>
     <div class="logo_products">
         <div class="container">
             <div class="w3ls_logo_products_left">
                 <h1>
-                    <a href="home"></a>
+                    <a></a>
                 </h1>
             </div>
 
             <div class="clearfix"> </div>
         </div>
     </div>
-
-    <!-- header -->
-
     <!--menu-->
     <nav class="navbar navbar-default" role="navigation">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-
-                <a class="navbar-brand" href="home">
+                <button class="navbar-brand" id="btnhome">
                     <i class="fa fa-home x2"></i> Trang chủ</a>
-
+                </button>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li>
-                        <a class="navbar-brand" href="congNghe"> Công nghệ</a>
+                        <button class="navbar-brand" id="btncongnghe"> Công nghệ </button>
                     </li>
                     <li>
-                        <a class="navbar-brand" href="thoiTrang"> Thời trang</a>
+                        <button class="navbar-brand" id="btnthoitrang"> Thời trang </button>
                     </li>
                     <li>
-                        <a class="navbar-brand" href="doGiaDung">Đồ gia dụng</a>
+                        <button class="navbar-brand" id="btndogiadung"> Đồ gia dụng </button>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="sub-menu">
-                        <a class="navbar-brand" href="" id="username">
-                            <i class="fa fa-user"></i>User</a> 
+                        <button class="navbar-brand">
+                            <i class="fa fa-user"></i>User</a>
+                        </button>
                     </li>
                     <li>
-                        <a class="navbar-brand" href="shopping">
+                        <button class="navbar-brand">
                             <i class="fa fa-shopping-cart"></i> Giỏ Hàng</a>
+                        </button>
                     </li>
                     <li>
-                        <a class="navbar-brand" href="daugiacuatoi">
+                        <button class="navbar-brand">
                             <i class="fa fa-gavel"></i> Đấu giá của tôi</a>
+                        </button>
                     </li>
                     <li>
-                        <a class="navbar-brand" href="">Đăng xuất</a>
+                        <button class="navbar-brand" id="btndangxuat"> Đăng xuất </button>
                     </li>
                 </ul>
 
@@ -154,14 +86,13 @@
         <!-- /.container-fluid -->
     </nav>
     <!-- -->
-
     <div class="clearfix"> </div>
 
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <!--    Danh SÁCH HOT       !-->
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="hot">
                     <div class="navigat">
 
                         <h2>Sản phẩm đang hot</h2>
@@ -171,7 +102,7 @@
                     </div>
                 </div>
                 <!--    Danh SÁCH HET GIO DAU       !-->
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="hetthoigian">
                     <div class="navigat">
 
                         <h2>Sản phẩm hết giờ đấu giá</h2>
@@ -180,6 +111,46 @@
 
                     </div>
                 </div>
+                <!--    Danh SÁCH công nghệ       !-->
+                <div class="panel panel-default" id="congnghe">
+                    <div class="navigat">
+
+                        <h2>Sản phẩm công nghệ</h2>
+                    </div>
+                    <div class="panel-body sp_congnghe">
+
+                    </div>
+                </div>
+                <!--    Danh SÁCH thời trang       !-->
+                <div class="panel panel-default" id="thoitrang">
+                    <div class="navigat">
+                        <h2>Sản phẩm thời trang</h2>
+                    </div>
+                    <div class="panel-body sp_thoitrang">
+                    </div>
+                </div>
+                <!--    Danh SÁCH đồ gia dụng       !-->
+                <div class="panel panel-default" id="dogiadung">
+                    <div class="navigat">
+                        <h2>Sản phẩm đồ gia dụng </h2>
+                    </div>
+                    <div class="panel-body sp_dogiadung">
+                    </div>
+                </div>
+                <!--    CHI TIẾT SẢN PHẨM       !-->
+                <div class="panel panel-default" id ="chitietsp">
+                    <div class="navigat">
+                        <h2 id="ten_ctsp"> </h2>
+                     </div>
+                     <div class="panel-body chitiet_sp">
+                         
+                             
+                    </div>
+                                    
+                </div>
+
+
+
             </div>
         </div>
     </div>
@@ -207,12 +178,14 @@
         <hr>
     </footer>
 
-
     <script src="js/jquery.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js"></script>
     <script type="text/html" src="js/jquery-2.1.4.min"></script>
     <script type="text/html" src="bootstrap-3.3.4-dist/bootstrap.min.js"></script>
     <script type="text/html" src="bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+    
+    <!-- Quan Trọng đọc file myjavascript trong public/myjavascript.js, các sự kiện đều nằm trong này -->
+    <script src="js/myjavascript.js"></script>
 
 </body>
 
