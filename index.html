@@ -33,17 +33,16 @@
                     <a></a>
                 </h1>
             </div>
-
             <div class="clearfix"> </div>
         </div>
     </div>
-    <!--menu-->
-    <nav class="navbar navbar-default" role="navigation">
+    <!--menu user-->
+    <nav class="navbar navbar-default" role="navigation" id="header_user">
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button class="navbar-brand" id="btnhome">
-                    <i class="fa fa-home x2"></i> Trang chủ</a>
+                    <i class="fa fa-home x2"></i>Trang chủ </a>
                 </button>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -60,18 +59,16 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="sub-menu">
-                        <button class="navbar-brand">
-                            <i class="fa fa-user"></i>User</a>
-                        </button>
-                    </li>
+                    <button class="navbar-brand">
+                        <i class="fa fa-user"></i>User</a>
+                    </button>
                     <li>
                         <button class="navbar-brand">
                             <i class="fa fa-shopping-cart"></i> Giỏ Hàng</a>
                         </button>
                     </li>
                     <li>
-                        <button class="navbar-brand">
+                        <button class="navbar-brand" id="cssButtonDauGia">
                             <i class="fa fa-gavel"></i> Đấu giá của tôi</a>
                         </button>
                     </li>
@@ -91,7 +88,47 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <!--    Danh SÁCH HOT       !-->
+                <!-- Load Login -->
+                <div class="panel panel-default" id="login">
+                    <div class="loginText">
+                        <h2>Đăng nhập</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row" id="login2">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <h4>Username: </h4>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="nametxt" class="form-control" type="text" />
+                            </div>
+                        </div>
+                        <!-- ---- -->
+                        <div class="row" id="login2">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <h4>Password: </h4>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="namepass" class="form-control" type="password" />
+                            </div>
+                        </div>
+                        <!-- ---- -->
+
+
+                        <div class="row" id="login2">
+
+                            <div class="col-md-9"></div>
+                            <button type="button" onclick="dangki(this)" class="btn btn-info pull-right">Đăng kí</button>
+                            <div class="col-md-1">
+
+                                <button type="button" onclick="login(this)" class="btn btn-info pull-right">Hoàn tất</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--    DANH SACH HOT       !-->
                 <div class="panel panel-default" id="hot">
                     <div class="navigat">
 
@@ -101,7 +138,7 @@
 
                     </div>
                 </div>
-                <!--    Danh SÁCH HET GIO DAU       !-->
+                <!--    DANH SÁCH HET GIO DAU       !-->
                 <div class="panel panel-default" id="hetthoigian">
                     <div class="navigat">
 
@@ -138,22 +175,172 @@
                     </div>
                 </div>
                 <!--    CHI TIẾT SẢN PHẨM       !-->
-                <div class="panel panel-default" id ="chitietsp">
+                <div class="panel panel-default" id="chitietsp">
                     <div class="navigat">
                         <h2 id="ten_ctsp"> </h2>
-                     </div>
-                     <div class="panel-body chitiet_sp">
-                         
-                             
                     </div>
-                                    
+                    <div class="panel-body chitiet_sp">
+
+
+                    </div>
+
                 </div>
 
 
 
             </div>
         </div>
+
+        <!-- menu admin -->
+        <nav class="navbar navbar-default" role="navigation" id="header_admin">
+            <div class="container-fluid">
+                <div class="navbar-header"></div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <button class="navbar-brand" id="btnthemsanpham"> Thêm sản phẩm </button>
+                        </li>
+                        <li>
+                            <button class="navbar-brand" id="btndangdaugia"> Đang đấu giá</button>
+                        </li>
+                        <li>
+                            <button class="navbar-brand" id="btndadaugia"> Đã đấu giá</button>
+                        </li>
+                        <li>
+                            <button class="navbar-brand" id="btnkhongdaugia"> Không đấu giá</button>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <button class="navbar-brand">
+                            <i class="fa fa-key"></i>Admin</a>
+                        </button>
+                        <li>
+                            <button class="navbar-brand" id="btndangxuatadmin"> Đăng xuất </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- THÊM SP -->
+        <div class="panel panel-default" id="insertSP">
+            <div class="navigat">
+                <h2>Thêm sản phẩm</h2>
+            </div>
+
+            <div class="row">
+                <br>
+                <label class="control-label col-sm-2 text-info">Tên sản phẩm:</label>
+                <div class="col-sm-7">
+                    <input id="ProName" name="ProName" type="text" placeholder="Tên sản phẩm" />
+                </div>
+            </div>
+            </br>
+
+            <div class="row">
+                <label class="control-label col-sm-2 text-info">Giá: </label>
+                <div class="col-sm-7 ">
+                    <input id="Price" name="Price" type="text" placeholder="Giá">
+                </div>
+            </div>
+            </br>
+
+            <div class="row">
+                <label class="control-label col-sm-2 text-info">Phân Loại:</label>
+                <div class="col-sm-7">
+                    <input name="loaisp" type="radio" value="1" checked> Công Nghệ
+                    <input name="loaisp" type="radio" value="2"> Thời Trang
+                    <input name="loaisp" type="radio" value="3"> Đồ Gia Dụng
+                </div>
+            </div>
+            </br>
+
+            <div class="row">
+                <label class="control-label col-sm-2 text-info">Thời gian mở đấu giá: </label>
+                <div class="col-sm-7 ">
+                    <input id="thoigianbd" name="thoigianbd" type="text" placeholder="Thời gian mở đấu giá">
+                </div>
+            </div>
+            </br>
+
+            <div class="row">
+                <label class="control-label col-sm-2 text-info"> Khoảng thời gian đấu giá: </label>
+                <div class="col-sm-7 ">
+                    <input id="thoigiandau" name="thoigiandau" type="text" placeholder="Khoảng thời gian đấu giá">
+                </div>
+            </div>
+            </br>
+
+            <div class="row">
+                <label class="control-label col-sm-2 text-info">Chi tiết :</label>
+                <div class="col-sm-3">
+                    <textarea class="form-control" id="FullDes" name="FullDes" type="text-area" placeholder="chi tiết đầy đủ"></textarea>
+                </div>
+            </div>
+            </br>
+            <div class="row">
+                <label class="control-label col-sm-2 text-info">Hình ảnh:</label>
+                <div class="col-sm-7">
+
+                    <input type="file" name="image" id="idImage">
+
+                </div>
+            </div>
+            </br>
+            <hr/>
+            <button id="submit" name="submit" type="button" class="col-lg-offset-2 btn btn-success">Thêm </button>
+
+            <p class="thongbao"> </p>
+        </div>
+
+        <!-- DANG DAU GIA: dung lai cua trang chu user-->
+
+        <!--DA DAU GIA -->
+        <div class="panel panel-default" id="spDaDG">
+            <div class="navigat">
+                <h2>Sản phẩm đã đấu giá</h2>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá bán</th>
+                        <th>Người mua</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div class= "sp_DaDG">
+                    </div>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- KHONG DAU GIA -->
+        <div class="panel panel-default" id="spKhongDG">
+            <div class="navigat">
+
+                <h2>Không đấu giá</h2>
+            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã sản phẩm</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá hiện tại</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <div class= "sp_KhongDG">
+                    </div>
+                </tbody>
+            </table>
+        </div>
+
     </div>
+
+
 
 
     <footer class="panel-footer">
@@ -183,7 +370,7 @@
     <script type="text/html" src="js/jquery-2.1.4.min"></script>
     <script type="text/html" src="bootstrap-3.3.4-dist/bootstrap.min.js"></script>
     <script type="text/html" src="bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
-    
+
     <!-- Quan Trọng đọc file myjavascript trong public/myjavascript.js, các sự kiện đều nằm trong này -->
     <script src="js/myjavascript.js"></script>
 

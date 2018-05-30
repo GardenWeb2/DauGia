@@ -5,7 +5,7 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '1234', 
+    password: '123123', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
@@ -20,7 +20,39 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
-    res.sendfile('login.html')
+    var name = req.query.username
+    var pass = req.query.password
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`SELECT t.*, l.*
+                    FROM taikhoan t, loaitk l
+                    WHERE t.loaitk = l.maloai and t.tentk ='`+ name + `' and t.matkhau ='`+ pass + `'`
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            if(result.rowCount == 0){
+                res.send("false")
+                res.end()
+            }
+            else{
+                if(result.rows[0].tenloai == "admin"){
+                    res.send("admin")
+                }
+                else if(result.rows[0].tenloai == "user"){
+                    mang = name
+                    res.send("user")
+                }
+            }
+        });
+     });
 })
 
 app.get('/index', (req, res) => {

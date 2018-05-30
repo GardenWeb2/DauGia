@@ -3,7 +3,7 @@ function anRandom() {
     $('#hetthoigian').hide()
 }
 
-function anLoaiSP() {
+function anALL() {
     $('.sp_hot').html("")
     $('.sp_hettg').html("")
     $('.chitiet_sp').html("")
@@ -11,13 +11,25 @@ function anLoaiSP() {
     $('#thoitrang').hide()
     $('#dogiadung').hide()
     $('#chitietsp').hide()
+    $('.sp_DaDG').html("")
+    $('.sp_KhongDG').html("")
+    $('#header_admin').hide()
+    $('#insertSP').hide()
+    $('#spDaDG').hide()
+    $('#spKhongDG').hide()
 }
-$(document).ready(() => {
+
+function showHome(){
+    $('#login').hide()
+    $('#header_user').show()
+    $('#hot').show()
+    $('#hetthoigian').show()
     $.ajax({
         url: '/load/sp_hot',
         method: 'get',
         success(data) {
-            anLoaiSP()
+            anALL()
+            anQuyenAM()
             data.forEach(x => {
                 // function intervalFunc() {
                 //     console.log(x.thoigiandau);
@@ -66,13 +78,20 @@ $(document).ready(() => {
             $('.sp_hettg').status(404)
         },
     })
+}
+
+$(document).ready(() => {
+    anRandom()
+    anALL()
+    $('#header_user').hide()
+    
 
     $('#btncongnghe').click(function () {
         $.ajax({
             url: '/load/sp_congnghe',
             method: 'get',
             success(data) {
-                anLoaiSP()
+                anALL()
                 anRandom()
                 $('#congnghe').show()
                 data.forEach(x => {
@@ -100,7 +119,7 @@ $(document).ready(() => {
             url: '/load/sp_thoitrang',
             method: 'get',
             success(data) {
-                anLoaiSP()
+                anALL()
                 anRandom()
                 $('#thoitrang').show()
                 data.forEach(x => {
@@ -129,7 +148,7 @@ $(document).ready(() => {
             url: '/load/sp_dogiadung',
             method: 'get',
             success(data) {
-                anLoaiSP()
+                anALL()
                 anRandom()
                 $('#dogiadung').show()
                 data.forEach(x => {
@@ -158,7 +177,7 @@ $(document).ready(() => {
             url: '/load/sp_hot',
             method: 'get',
             success(data) {
-                anLoaiSP()
+                anALL()
                 $('#hot').show()
                 data.forEach(x => {
                     $('.sp_hot').append(
@@ -217,7 +236,7 @@ function xemChitiet(e) {
     url: '/load/chitiet/' + id,
         method: 'get',
         success(data) {
-            anLoaiSP()
+            anALL()
             anRandom()
             $('#chitietsp').show()
             data.forEach(x => {
@@ -330,4 +349,30 @@ function dauGia(e) {
             console.log(err)
         },
     })
+}
+
+function login(e){
+    var name = $('#nametxt').val()
+    var pass = $('#namepass').val() 
+    $.ajax({
+        url: '/login',
+        method: 'get',
+        data: {
+            username: name,
+            password: pass
+        },
+        success(data) {
+            console.log(data)
+            if(data == "user")
+                showHome()
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
+}
+
+
+function dangki(e){
+    $('#login').hide()
 }
