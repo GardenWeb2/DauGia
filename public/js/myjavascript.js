@@ -19,7 +19,7 @@ function anALL() {
     $('#spKhongDG').hide()
 }
 
-function showHome(){
+function showHome_User(){
     $('#login').hide()
     $('#header_user').show()
     $('#hot').show()
@@ -29,7 +29,6 @@ function showHome(){
         method: 'get',
         success(data) {
             anALL()
-            anQuyenAM()
             data.forEach(x => {
                 // function intervalFunc() {
                 //     console.log(x.thoigiandau);
@@ -85,7 +84,6 @@ $(document).ready(() => {
     anALL()
     $('#header_user').hide()
     
-
     $('#btncongnghe').click(function () {
         $.ajax({
             url: '/load/sp_congnghe',
@@ -229,6 +227,8 @@ $(document).ready(() => {
 
 })
 
+
+
 function xemChitiet(e) {
     //alert($(e).val())
     var id = $(e).val()
@@ -351,6 +351,24 @@ function dauGia(e) {
     })
 }
 
+function showHome_Admin(){
+    $('#login').hide()
+    $('#header_admin').show()
+    $('#insertSP').show();
+}
+
+$(document).ready(() =>{
+    $('#header_admin').hide()
+
+    $('#btnthemsanpham').click(function() {
+        $('#insertSP').show();
+    })
+
+    $('#btndangdaugia').click(function() {
+        showHome_User();
+    })
+})
+
 function login(e){
     var name = $('#nametxt').val()
     var pass = $('#namepass').val() 
@@ -364,7 +382,9 @@ function login(e){
         success(data) {
             console.log(data)
             if(data == "user")
-                showHome()
+                showHome_User()
+            else
+                showHome_Admin()
         },
         error(err) {
             console.log(err)
