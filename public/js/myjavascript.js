@@ -4,6 +4,7 @@ function anRandom() {
 }
 
 function anALL() {
+    // an ben user
     $('.sp_hot').html("")
     $('.sp_hettg').html("")
     $('.chitiet_sp').html("")
@@ -11,24 +12,22 @@ function anALL() {
     $('#thoitrang').hide()
     $('#dogiadung').hide()
     $('#chitietsp').hide()
+
+    //an ben admin
     $('.sp_DaDG').html("")
     $('.sp_KhongDG').html("")
+    $('.menu').hide();
     $('#header_admin').hide()
     $('#insertSP').hide()
     $('#spDaDG').hide()
     $('#spKhongDG').hide()
 }
 
-function showHome_User(){
-    $('#login').hide()
-    $('#header_user').show()
-    $('#hot').show()
-    $('#hetthoigian').show()
+function loadSPHot(){
     $.ajax({
         url: '/load/sp_hot',
         method: 'get',
         success(data) {
-            anALL()
             data.forEach(x => {
                 // function intervalFunc() {
                 //     console.log(x.thoigiandau);
@@ -54,7 +53,9 @@ function showHome_User(){
             $('.sp_hot').status(404)
         },
     })
+}
 
+function loadSPHetThoiGianDau(){
     $.ajax({
         url: '/load/sp_hettg',
         method: 'get',
@@ -78,6 +79,18 @@ function showHome_User(){
         },
     })
 }
+
+function showHome_User(){
+    anALL()
+    $('#login').hide()
+    $('#header_user').show()
+    $('#hot').show()
+    $('#hetthoigian').show()
+
+    loadSPHot()
+    loadSPHetThoiGianDau()
+}
+
 
 $(document).ready(() => {
     anRandom()
@@ -171,58 +184,7 @@ $(document).ready(() => {
     })
 
     $('#btnhome').click(function () {
-        $.ajax({
-            url: '/load/sp_hot',
-            method: 'get',
-            success(data) {
-                anALL()
-                $('#hot').show()
-                data.forEach(x => {
-                    $('.sp_hot').append(
-                        `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                        x.hinhanh +
-                        `" width="300" hight="300"><div class="caption"><h3>` +
-                        x.info +
-                        `</h3>Thời gian:      <strong>` +
-                        x.thoigiandau +
-                        `</strong><br> Giá:<span style="color: red">` +
-                        x.giahientai + "K" +
-                        `</span></br>   
-                        <button class="btn-default" onclick="xemChitiet(this)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
-                    ) 
-                });
-            },
-            error(err) {
-                $('.sp_hot').status(404)
-            },
-        })
-
-        $.ajax({
-            url: '/load/sp_hettg',
-            method: 'get',
-            success(data) {
-                $('#hetthoigian').show()
-                data.forEach(x => {
-                    $('.sp_hettg').append(
-                        `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                        x.hinhanh +
-                        `" width="300" hight="300"><div class="caption"><h3>` +
-                        x.info +
-                        `</h3>Thời gian:      <strong>` +
-                        x.thoigiandau +
-                        `</strong><br> Giá:<span style="color: red">` +
-                        x.giahientai + "K" +
-                        `</span></br>   
-                        <button class="btn-default" onclick="xemChitiet(this)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
-                    )
-                });
-            },
-            error(err) {
-                $('.sp_hettg').status(404)
-            },
-        })
+        showHome_User();
     })
 
 })
@@ -357,17 +319,33 @@ function showHome_Admin(){
     $('#insertSP').show();
 }
 
-$(document).ready(() =>{
-    $('#header_admin').hide()
 
-    $('#btnthemsanpham').click(function() {
-        $('#insertSP').show();
+    $(document).ready(() =>{
+        $('#header_admin').hide()
+    
+        $('#btnthemsanpham').click(function() {
+            $('#insertSP').show();
+        })
+        
+        $('#btndangdaugia').click(function() {
+            $('.menu').slideToggle('slow', function(){ //hien thi cac nut trong menu bang cach truot cham xuong
+                $('#btnsphot2').show()
+                $('#btnspshtg').show()
+                $('#btncongnghe2').show()
+                $('#btndogiadung2').show()
+                $('#btnthoitrang2').show()
+            })
+
+            $('#btnsphot2').click(function(){
+                loadSPHot()
+            })
+        })
+        
+       
+    
     })
 
-    $('#btndangdaugia').click(function() {
-        showHome_User();
-    })
-})
+
 
 function login(e){
     var name = $('#nametxt').val()
