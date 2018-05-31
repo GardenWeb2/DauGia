@@ -12,9 +12,6 @@ var config = {
 };
 var pool = new pg.Pool(config);
 
-var cookieParser = require('cookie-parser')
-app.use(cookieParser())
-
 
 app.use(express.static('public'))
 
@@ -50,9 +47,6 @@ app.get('/login', (req, res) => {
                     res.send("admin")
                 }
                 else if(result.rows[0].tenloai == "user"){
-                    var expireTime = 3600
-                    res.cookie('user_id', result.rows[0].matk, {expire : new Date() + expireTime})
-                    console.log(req.cookies['user_id'])
                     res.send("user")
                 }
             }

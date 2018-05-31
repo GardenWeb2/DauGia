@@ -26,6 +26,8 @@ function anALL() {
     $('#spKhongDG').hide()
 }
 
+
+// setInterval cho thời gian thay đổi
 function thoiGianGiam(data, loaiid){
     setInterval(function() {
         for(var i=0; i< data.length; i++){
@@ -55,8 +57,6 @@ function thoiGianGiam(data, loaiid){
         }
     }, 1000)
 }
-
-
 function loadSPHot(e) {
     $.ajax({
         url: '/load/sp_hot',
@@ -68,12 +68,7 @@ function loadSPHot(e) {
                 $('#header_admin').show() 
             }   
             data.forEach(x => {
-                // function intervalFunc() {
-                //     console.log(x.thoigiandau);
-                //     //x.thoigiandau--;
-                // }
-                // setInterval(intervalFunc, 1000)
-
+               
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
@@ -182,7 +177,7 @@ function loadSPDoGiaDung(e) {
                             <button class="btn-default" onclick="xemChitiet(this)" value="` +
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
-            })
+            });
             thoiGianGiam(data,"idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
@@ -223,8 +218,6 @@ function loadSPThoiTrang(e) {
     })
 }
 
-
-
 function showHome_User() {
     anALL()
     $('#login').hide()
@@ -258,8 +251,7 @@ $(document).ready(() => {
         showHome_User();
     })
 
-    cacNutTrongAdmin()
-
+    nutAdmin()
 })
 
 
@@ -291,7 +283,6 @@ function xemChitiet(e) {
                                         <strong>` + x.thoigiandau + `</strong>
                                     </span>
                                 </h2>
-
                                 <h4> Giá thầu hiện tại: </h4>
                                 <h2>
                                     <span style="color: black">
@@ -318,14 +309,12 @@ function xemChitiet(e) {
                                 <input id="deltasoluong" value="`+ x.giatri + `"type="hidden">
                                 <input id="idmaPhienDG" value="`+ x.maphiendg + `"type="hidden">
                                 
-
                             </div>
                         </div>
                     </div>
                         <!--    Phần dưới chi tiết thông tin       !-->
                         <div class="panel panel-default">
                             <div class="panel-heading">
-
                                 <h3> Thông tin sản phẩm </h3>
                             </div>
                             <div class="panel-body">
@@ -386,9 +375,26 @@ function dauGia(e) {
     })
 }
 
+function showHome_Admin() {
+    $('#login').hide()
+    $('#header_admin').show()
+    $('#insertSP').show();
+}
 
-// ----------------------------Admin-------------------------
-function cacNutTrongAdmin(){ 
+function loadSPDaDG() {
+    $.ajax({
+        url: '/load/sp_daDG',
+        method: 'get',
+        success(data) {
+            data.forEach(x => {
+                $('.sp_daDG').append(
+                    ''
+                )
+            })
+        }
+    })
+}
+function nutAdmin() {
     $('#btnthemsanpham').click(function () {
         anRandom()
         anALL()
@@ -442,27 +448,7 @@ function cacNutTrongAdmin(){
 }
 
 
-function showHome_Admin() {
-    $('#login').hide()
-    $('#header_admin').show()
-    $('#insertSP').show();
-}
 
-function loadSPDaDG() {
-    $.ajax({
-        url: '/load/sp_daDG',
-        method: 'get',
-        success(data) {
-            data.forEach(x => {
-                $('.sp_daDG').append(
-                    ''
-                )
-            })
-        }
-    })
-}
-
-// ----------------------------Đăng nhập & Đăng kí-------------------------
 function login(e) {
     var name = $('#nametxt').val()
     var pass = $('#namepass').val()

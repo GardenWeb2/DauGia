@@ -17,7 +17,10 @@
   },
   "homepage": "https://github.com/GardenWeb2/DauGia#readme",
   "dependencies": {
+<<<<<<< HEAD
     "cookie": "^0.3.1",
+=======
+>>>>>>> 8d06e42c085d9041c11fa02fcbafa3d6a1b8e58c
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "pg": "^7.4.1",

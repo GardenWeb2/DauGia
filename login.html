@@ -55,6 +55,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
+
+                
                 <!--    Danh SÁCH HOT       !-->
                 <div class="panel panel-default">
                     <div class="loginText">
@@ -89,6 +91,9 @@
                         </div>
                     </div>
                 </div>
+
+
+
             </div>
         </div>
     </div>
@@ -126,3 +131,57 @@
 </body>
 
 </html>
+
+
+
+
+
+
+setInterval(function() {
+                
+    $('.sp_hot').html("")
+    data.forEach(x => {
+        $('.sp_hot').append(
+            `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
+            x.hinhanh +
+            `" width="300" hight="300"><div class="caption"><h3>` + x.info +
+            `</h3>Thời gian:      <strong id="tgd`+x.masp+ `">` +
+            x.thoigiandau +
+            `</strong><br> Giá:<span style="color: red">` +
+            x.giahientai + "K" +
+            `</span></br>
+                <button class="btn-default" onclick="xemChitiet(this)" value="` +
+            x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+        ) 
+        var arr = []
+        arr = x.thoigiandau.split(":"); // 00:03:40
+        console.log("++++++"+arr+"++++S")
+        var gio = parseInt(arr[0])
+        var phut = parseInt(arr[1])
+        var giay = parseInt(arr[2])
+        console.log(gio+ "   "+phut+"    "+giay)
+        var thoigiantd =""
+        if (gio > 0 && phut == 0 && giay == 0){
+            gio = gio - 1
+            giay = 60
+        }
+        else if (phut > 0 && giay == 0){
+            phut = phut - 1
+            giay = 60
+        }
+        else if (gio == 0 && phut == 0 && giay == 0)
+            giay = giay + 1
+        giay = giay - 1
+
+        thoigiantd = gio + ':' + phut + ':' + giay
+        $('.tgd').text(thoigiantd)
+        //  var idm= "'#tgd" +x.masp+ "'"
+        //  console.log($('idm').text())
+        console.log($('.tgd').text());
+
+    })
+    
+    
+}, 1000)
+
+
