@@ -57,6 +57,7 @@ function thoiGianGiam(data, loaiid){
         }
     }, 1000)
 }
+
 function loadSPHot(e) {
     $.ajax({
         url: '/load/sp_hot',
@@ -79,7 +80,7 @@ function loadSPHot(e) {
                     x.giahientai + "K" +
                     `</span></br>
                         <button class="btn-default" onclick="xemChitiet(this)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    x.masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
             });
             thoiGianGiam(data,"idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
@@ -400,6 +401,47 @@ function nutAdmin() {
         anALL()
         $('#header_admin').show()
         $('#insertSP').show();
+    })
+
+    $('#submitThemSp').click(function () {
+        anRandom()
+        anALL()
+        $('#header_admin').show()
+        $('#insertSP').show();
+        var ten = $('#ProName').val();
+        var gia = $('#Price').val();
+        var checkbox = document.getElementsByName("loaisp");
+        var loai = 1;
+        for (var i = 0; i < checkbox.length; i++) {
+            if (checkbox[i].checked === true) {
+                var loai = checkbox[i].value;
+            }
+        }
+        var tgbd = $('#thoigianbd').val();
+        var tgdau = $('#thoigiandaugia').val();
+        var mota = $('#FullDes').val();
+        var img = $('#idImage').val();
+
+        $.ajax({
+            url: '/createProduct',
+            method: 'get',
+            data: {
+                tensp: ten,
+                giatien: gia,
+                phanloai: loai,
+                thoigianbd: tgbd,
+                thoigiandau: tgdau,
+                chitiet: mota,
+                hinhanh: img
+            },
+            success(data) {
+                $('.thongbao').append(data)
+
+            },
+            error(err) {
+                $('.thongbao').status(404)
+            },
+        })
     })
 
     $('#btndangdaugia').click(function () {
