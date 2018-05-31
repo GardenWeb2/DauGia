@@ -3,7 +3,12 @@ function anRandom() {
     $('#hetthoigian').hide()
 }
 
+<<<<<<< HEAD
 function anAll() {
+=======
+function anALL() {
+    // an ben user
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
     $('.sp_hot').html("")
     $('.sp_hettg').html("")
     $('.chitiet_sp').html("")
@@ -14,14 +19,23 @@ function anAll() {
     $('#thoitrang').hide()
     $('#dogiadung').hide()
     $('#chitietsp').hide()
+<<<<<<< HEAD
     $('.sp_DaDG').html("")
     $('.sp_KhongDG').html("")
+=======
+
+    //an ben admin
+    $('.sp_DaDG').html("")
+    $('.sp_KhongDG').html("")
+    $('.menu').hide();
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
     $('#header_admin').hide()
     $('#insertSP').hide()
     $('#spDaDG').hide()
     $('#spKhongDG').hide()
 }
 
+<<<<<<< HEAD
 // setInterval cho thời gian thay đổi
 function thoiGianGiam(data, loaiid){
     setInterval(function() {
@@ -70,10 +84,14 @@ function showHomePage() {
     anAll()
     $('#hot').show()
     $('#hetthoigian').show()
+=======
+function loadSPHot(e) {
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
     $.ajax({
         url: '/load/sp_hot',
         method: 'get',
         success(data) {
+<<<<<<< HEAD
                 data.forEach(x => {
                     $('.sp_hot').append(
                         `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
@@ -89,16 +107,50 @@ function showHomePage() {
                     )
                 })
                 thoiGianGiam(data,"idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+=======
+            if (e == 'admin'){
+                anALL()
+                $('#hetthoigian').hide()
+                $('#header_admin').show() 
+            }   
+            data.forEach(x => {
+                // function intervalFunc() {
+                //     console.log(x.thoigiandau);
+                //     //x.thoigiandau--;
+                // }
+                // setInterval(intervalFunc, 1000)
+
+                $('.sp_hot').append(
+                    `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
+                    x.hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + x.info +
+                    `</h3>Thời gian:      <strong>` +
+                    x.thoigiandau +
+                    `</strong><br> Giá:<span style="color: red">` +
+                    x.giahientai + "K" +
+                    `</span></br>
+                        <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                )
+            });
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
         },
         error(err) {
             $('.sp_hot').status(404)
         }
     })
+}
 
+function loadSPHetThoiGianDau(e) {
     $.ajax({
         url: '/load/sp_hettg',
         method: 'get',
         success(data) {
+            if (e == 'admin'){
+                anALL()
+                $('#hot').hide()
+                $('#header_admin').show() 
+            }   
             data.forEach(x => {
                 $('.sp_hettg').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
@@ -119,6 +171,7 @@ function showHomePage() {
         },
     })
 }
+<<<<<<< HEAD
 
 $(document).ready(() => {
     anRandom()
@@ -153,8 +206,73 @@ $(document).ready(() => {
                 $('.sp_congnghe').status(404)
             },
         })
-    })
+=======
 
+function loadSPCongNghe(e) {
+    $.ajax({
+        url: '/load/sp_congnghe',
+        method: 'get',
+        success(data) {
+            anALL()
+            anRandom()
+            if (e == 'admin'){
+                $('#header_admin').show() 
+            }                          
+            $('#congnghe').show()
+            data.forEach(x => {
+                $('.sp_congnghe').append(
+                    `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
+                    x.hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` +
+                    x.info + `</h3>Thời gian:      <strong>` +
+                    x.thoigiandau +
+                    `</strong><br> Giá:<span style="color: red">` +
+                    x.giahientai + "K" + `</span></br>
+                                <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                )
+            });
+        },
+        error(err) {
+            $('.sp_congnghe').status(404)
+        },
+    })
+}
+
+function loadSPDoGiaDung(e) {
+    $.ajax({
+        url: '/load/sp_dogiadung',
+        method: 'get',
+        success(data) {
+            anALL()
+            anRandom()
+            if (e == 'admin'){
+                $('#header_admin').show() 
+            }   
+            $('#dogiadung').show()
+            data.forEach(x => {
+                $('.sp_dogiadung').append(
+                    `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
+                    x.hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` +
+                    x.info + `</h3>Thời gian:      <strong>` +
+                    x.thoigiandau +
+                    `</strong><br> Giá:<span style="color: red">` +
+                    x.giahientai + "K" +
+                    `</span></br>  
+                            <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                )
+            });
+        },
+        error(err) {
+            $('.sp_dogiadung').status(404)
+        },
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
+    })
+}
+
+<<<<<<< HEAD
     $('#btnthoitrang').click(function () {
         $.ajax({
             url: '/load/sp_thoitrang',
@@ -217,9 +335,75 @@ $(document).ready(() => {
 
     $('#btnhome').click(function () {
         showHomePage()
+=======
+function loadSPThoiTrang(e) {
+    $.ajax({
+        url: '/load/sp_thoitrang',
+        method: 'get',
+        success(data) {
+            anALL()
+            anRandom()
+            if (e == 'admin')
+                $('#header_admin').show() 
+            $('#thoitrang').show()
+            data.forEach(x => {
+                $('.sp_thoitrang').append(
+                    `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
+                    x.hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` +
+                    x.info + `</h3>Thời gian:      <strong>` +
+                    x.thoigiandau +
+                    `</strong><br> Giá:<span style="color: red">` +
+                    x.giahientai + "K" +
+                    `</span></br>   
+                            <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                )
+            });
+        },
+        error(err) {
+            $('.sp_thoitrang').status(404)
+        },
+    })
+}
+
+function showHome_User() {
+    anALL()
+    $('#login').hide()
+    $('#header_user').show()
+    $('#hot').show()
+    $('#hetthoigian').show()
+
+    loadSPHot('user')
+    loadSPHetThoiGianDau('user')
+}
+
+
+$(document).ready(() => {
+    anRandom()
+    anALL()
+    $('#header_user').hide()
+
+    $('#btncongnghe').click(function () {
+        loadSPCongNghe('user')
+    })
+
+    $('#btnthoitrang').click(function () {
+        loadSPThoiTrang('user')
+    })
+
+    $('#btndogiadung').click(function () {
+        loadSPDoGiaDung('user')
+    })
+
+    $('#btnhome').click(function () {
+        showHome_User();
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
     })
 
 })
+
+
 
 function xemChitiet(e) {
     //alert($(e).val())
@@ -228,7 +412,11 @@ function xemChitiet(e) {
         url: '/load/chitiet/' + id,
         method: 'get',
         success(data) {
+<<<<<<< HEAD
             anAll()
+=======
+            anALL()
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
             anRandom()
             $('#chitietsp').show()
             data.forEach(x => {
@@ -263,7 +451,11 @@ function xemChitiet(e) {
                                                 <span class="glyphicon glyphicon-minus"></span>
                                             </button>
                                         </span>
+<<<<<<< HEAD
                                         <input value="` + x.giahientai + `" id="giadau" class="form-control input-number" type="text" style="width: 50px">
+=======
+                                        <input value="`+ x.giahientai + `" id="giadau" class="form-control input-number" type="text" style="width: 50px">
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
                                         <button onclick="giaTienThayDoi(this)" value="cong" class="btn btn-success btn-number" data-type="plus" data-field="quant">
                                             <span class="glyphicon glyphicon-plus"></span>
                                         </button>
@@ -272,8 +464,13 @@ function xemChitiet(e) {
                                     
                                     <button onclick="dauGia()" class="btn btn-default" role="button"> Đấu Giá </button>
                                 </p>
+<<<<<<< HEAD
                                 <input id="deltasoluong" value="` + x.giatri + `"type="hidden">
                                 <input id="idmaPhienDG" value="` + x.maphiendg + `"type="hidden">
+=======
+                                <input id="deltasoluong" value="`+ x.giatri + `"type="hidden">
+                                <input id="idmaPhienDG" value="`+ x.maphiendg + `"type="hidden">
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
                                 
 
                             </div>
@@ -286,7 +483,11 @@ function xemChitiet(e) {
                                 <h3> Thông tin sản phẩm </h3>
                             </div>
                             <div class="panel-body">
+<<<<<<< HEAD
                                 <span> <p> Chi tiết sản phẩm</p>` + x.mota + `</span>
+=======
+                                <span> <p> Chi tiết sản phẩm</p>`+ x.mota + `</span>
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
                             </div>
                             </div> `
                 )
@@ -317,7 +518,11 @@ function giaTienThayDoi(e) {
     })
 }
 
+<<<<<<< HEAD
 function dauGia() {
+=======
+function dauGia(e) {
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
     var maphiendg = $('#idmaPhienDG').val()
     var matk = 2;
     var giadau = $('#giadau').val()
@@ -343,9 +548,87 @@ function dauGia() {
     })
 }
 
+<<<<<<< HEAD
 function login(e) {
     var name = $('#nametxt').val()
     var pass = $('#passtxt').val()
+=======
+function showHome_Admin() {
+    $('#login').hide()
+    $('#header_admin').show()
+    $('#insertSP').show();
+}
+
+function loadSPDaDG() {
+    $.ajax({
+        url: '/load/sp_daDG',
+        method: 'get',
+        success(data) {
+            data.forEach(x => {
+                $('.sp_daDG').append(
+                    ''
+                )
+            })
+        }
+    })
+}
+$(document).ready(() => {
+    $('#btnthemsanpham').click(function () {
+        anRandom()
+        $('#insertSP').show();
+    })
+
+    $('#btndangdaugia').click(function () {
+        $('.menu').slideToggle(0, function () { //hien thi cac nut trong menu bang cach truot xuong
+            $('#btnsphot2').show()
+            $('#btnspshtg').show()
+            $('#btncongnghe2').show()
+            $('#btndogiadung2').show()
+            $('#btnthoitrang2').show()
+        })
+
+        $('#btnsphot2').click(function () {
+            $('#insertSP').hide()
+            $('#hot').show()
+            loadSPHot('admin')
+        })
+
+        $('#btnspshtg').click(function () {
+            $('#insertSP').hide()
+            $('#hetthoigian').show()
+            loadSPHetThoiGianDau('admin')
+        })
+
+        $('#btncongnghe2').click(function(){
+            $('#insertSP').hide()
+            loadSPCongNghe('admin')
+        })
+
+        $('#btndogiadung2').click(function(){
+            $('#insertSP').hide()
+            loadSPDoGiaDung('admin')
+        })
+
+        $('#btnthoitrang2').click(function(){
+            $('#insertSP').hide()
+            loadSPThoiTrang('admin')
+        })
+    })
+
+    $('#btndadaugia').click(function () {
+        anALL()
+        anRandom()
+        $('#header_admin').hide()
+        $('#spDaDG').show();
+    })
+})
+
+
+
+function login(e) {
+    var name = $('#nametxt').val()
+    var pass = $('#namepass').val()
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
     $.ajax({
         url: '/login',
         method: 'get',
@@ -356,9 +639,15 @@ function login(e) {
         success(data) {
             console.log(data)
             if (data == "user")
+<<<<<<< HEAD
                 showHome()
             if (data == "admin")
                 showHomeAdmin()
+=======
+                showHome_User()
+            else
+                showHome_Admin()
+>>>>>>> f8717ab1344975c9de6d2202fe523567bd342e61
         },
         error(err) {
             console.log(err)
