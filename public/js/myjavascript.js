@@ -8,6 +8,9 @@ function anALL() {
     $('.sp_hot').html("")
     $('.sp_hettg').html("")
     $('.chitiet_sp').html("")
+    $('.sp_congnghe').html("")
+    $('.sp_thoitrang').html("")
+    $('.sp_dogiadung').html("")
     $('#congnghe').hide()
     $('#thoitrang').hide()
     $('#dogiadung').hide()
@@ -22,6 +25,37 @@ function anALL() {
     $('#spDaDG').hide()
     $('#spKhongDG').hide()
 }
+
+function thoiGianGiam(data, loaiid){
+    setInterval(function() {
+        for(var i=0; i< data.length; i++){
+            var tagId = "#" + loaiid + data[i].masp + ""
+            var arr = []
+            arr = $(tagId).text().split(":"); // 00:03:40
+            var gio = parseInt(arr[0])
+            var phut = parseInt(arr[1])
+            var giay = parseInt(arr[2])
+            
+            var thoigiantd =""
+            if (gio > 0 && phut == 0 && giay == 0){
+                gio = gio - 1
+                giay = 60
+            }
+            else if (phut > 0 && giay == 0){
+                phut = phut - 1
+                giay = 60
+            }
+            else if (gio == 0 && phut == 0 && giay == 0)
+                giay = giay + 1
+            giay = giay - 1
+
+            thoigiantd = gio + ':' + phut + ':' + giay
+            $(tagId).text(thoigiantd)
+            console.log($(tagId).text());
+        }
+    }, 1000)
+}
+
 
 function loadSPHot(e) {
     $.ajax({
@@ -44,7 +78,7 @@ function loadSPHot(e) {
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong>` +
+                    `</h3>Thời gian:      <strong id="idhot`+ x.masp+`" >` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
@@ -53,6 +87,7 @@ function loadSPHot(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
+            thoiGianGiam(data,"idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_hot').status(404)
@@ -75,7 +110,7 @@ function loadSPHetThoiGianDau(e) {
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong>` +
+                    `</h3>Thời gian:      <strong id="idhettg`+ x.masp+`">` +
                     x.thoigiandau + `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
                     `</span></br>   
@@ -83,6 +118,7 @@ function loadSPHetThoiGianDau(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
+            thoiGianGiam(data,"idhettg")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_hettg').status(404)
@@ -106,7 +142,7 @@ function loadSPCongNghe(e) {
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong>` +
+                    x.info + `</h3>Thời gian:      <strong id="idspcn`+ x.masp+`">` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" + `</span></br>
@@ -114,6 +150,7 @@ function loadSPCongNghe(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
+            thoiGianGiam(data,"idspcn")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_congnghe').status(404)
@@ -137,7 +174,7 @@ function loadSPDoGiaDung(e) {
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong>` +
+                    x.info + `</h3>Thời gian:      <strong id="idspdgd`+ x.masp+`">` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
@@ -145,7 +182,8 @@ function loadSPDoGiaDung(e) {
                             <button class="btn-default" onclick="xemChitiet(this)" value="` +
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
+            })
+            thoiGianGiam(data,"idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_dogiadung').status(404)
@@ -168,7 +206,7 @@ function loadSPThoiTrang(e) {
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong>` +
+                    x.info + `</h3>Thời gian:      <strong id="idsptt`+ x.masp+`">` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
@@ -177,12 +215,15 @@ function loadSPThoiTrang(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
+            thoiGianGiam(data,"idsptt")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_thoitrang').status(404)
         },
     })
 }
+
+
 
 function showHome_User() {
     anALL()
@@ -216,6 +257,8 @@ $(document).ready(() => {
     $('#btnhome').click(function () {
         showHome_User();
     })
+
+    cacNutTrongAdmin()
 
 })
 
@@ -343,28 +386,13 @@ function dauGia(e) {
     })
 }
 
-function showHome_Admin() {
-    $('#login').hide()
-    $('#header_admin').show()
-    $('#insertSP').show();
-}
 
-function loadSPDaDG() {
-    $.ajax({
-        url: '/load/sp_daDG',
-        method: 'get',
-        success(data) {
-            data.forEach(x => {
-                $('.sp_daDG').append(
-                    ''
-                )
-            })
-        }
-    })
-}
-$(document).ready(() => {
+// ----------------------------Admin-------------------------
+function cacNutTrongAdmin(){ 
     $('#btnthemsanpham').click(function () {
         anRandom()
+        anALL()
+        $('#header_admin').show()
         $('#insertSP').show();
     })
 
@@ -411,10 +439,30 @@ $(document).ready(() => {
         $('#header_admin').hide()
         $('#spDaDG').show();
     })
-})
+}
 
 
+function showHome_Admin() {
+    $('#login').hide()
+    $('#header_admin').show()
+    $('#insertSP').show();
+}
 
+function loadSPDaDG() {
+    $.ajax({
+        url: '/load/sp_daDG',
+        method: 'get',
+        success(data) {
+            data.forEach(x => {
+                $('.sp_daDG').append(
+                    ''
+                )
+            })
+        }
+    })
+}
+
+// ----------------------------Đăng nhập & Đăng kí-------------------------
 function login(e) {
     var name = $('#nametxt').val()
     var pass = $('#namepass').val()

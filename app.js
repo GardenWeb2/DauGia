@@ -5,12 +5,15 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '123123', 
+    password: '1234', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
 };
 var pool = new pg.Pool(config);
+
+var cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
 
 app.use(express.static('public'))
@@ -47,7 +50,9 @@ app.get('/login', (req, res) => {
                     res.send("admin")
                 }
                 else if(result.rows[0].tenloai == "user"){
-                    mang = name
+                    var expireTime = 3600
+                    res.cookie('user_id', result.rows[0].matk, {expire : new Date() + expireTime})
+                    console.log(req.cookies['user_id'])
                     res.send("user")
                 }
             }
