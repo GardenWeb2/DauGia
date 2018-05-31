@@ -12,6 +12,8 @@ var config = {
 };
 var pool = new pg.Pool(config);
 
+var cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
 app.use(express.static('public'))
 
@@ -20,7 +22,41 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
-    res.sendfile('login.html')
+    var name = req.query.username
+    var pass = req.query.password
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`SELECT t.*, l.*
+                    FROM taikhoan t, loaitk l
+                    WHERE t.loaitk = l.maloai and t.tentk ='`+ name + `' and t.matkhau ='`+ pass + `'`
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            if(result.rowCount == 0){
+                res.send("false")
+                res.end()
+            }
+            else{
+                if(result.rows[0].tenloai == "admin"){
+                    res.send("admin")
+                }
+                else if(result.rows[0].tenloai == "user"){
+                    var expireTime = 3600
+                    res.cookie('user_id', result.rows[0].matk, {expire : new Date() + expireTime})
+                    console.log(req.cookies['user_id'])
+                    res.send("user")
+                }
+            }
+        });
+     });
 })
 
 app.get('/index', (req, res) => {
@@ -270,7 +306,6 @@ app.get('/create_update_PhieuDG', (req, res)=>{
 
 
 //          ADMIN       //
-
 app.get('/home_admin', (req, res) => {
     res.sendfile('spDangDauGia_admin.html')
 })
@@ -374,6 +409,7 @@ app.get('/createProduct', (req, res)=>{
         });
      });
 })
+
 
 
 
