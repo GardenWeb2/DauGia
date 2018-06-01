@@ -298,7 +298,6 @@ $(document).ready(() => {
     anALL()
     $('#header_user').hide()
 
-    loadAllSPDangDauGia()   // load sẵn thời gian chạy tự động trong trang chi tiết của tất cả các sản phẩm
     var demCongnghe = 0
     $('#btncongnghe').click(function () {
         loadSPCongNghe('user',demCongnghe)
@@ -483,17 +482,13 @@ function giaTienThayDoi(e) {
 
 function dauGia(e) {
     var maphiendg = $('#idmaPhienDG').val()
-    var matk = 2;       // đợi setCookies
     var giadau = $('#giadau').val()
     var tinhtrangphieu = 1
-    // var masanpham = $(e).val()
     $.ajax({
         url: '/create_update_PhieuDG',
         method: 'get',
         data: {
             maphien: maphiendg,
-            // masp: masanpham,
-            matk: matk,
             giadau: giadau,
             matinhtrang: tinhtrangphieu
         },
@@ -653,11 +648,23 @@ function login(e) {
             password: pass
         },
         success(data) {
-            console.log(data)
-            if (data == "user")
-                showHome_User(0)
-            else if(data == "admin")
-                showHome_Admin()
+            if(data.status != "false"){
+                loadAllSPDangDauGia()   // load sẵn thời gian chạy tự động trong trang chi tiết của tất cả các sản phẩm
+                $.ajax({
+                    url: '/setCookie/' + data.user,
+                    method: 'get',
+                    success(data) {
+                        console.log("Du lieu nhan duoc: " + data)
+                    },
+                    error(err) {
+                       console.log(err)
+                    },
+                })
+                if (data.type == "user")
+                    showHome_User(0)
+                else if(data.type == "admin")
+                    showHome_Admin()
+            }
             else
                 alert("Username hoặc Password không đúng ")
         },

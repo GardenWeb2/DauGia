@@ -21,6 +21,22 @@ app.get('/', (req, res) => {
     res.sendfile('welcome.html')
 })
 
+
+app.get('/setCookie/:matk', (req, res, next)=>{
+    var matk = req.params['matk']
+    var expireTime = 3600
+    res.cookie('user_id', matk, {expire : new Date() + expireTime})
+    res.end("DONE")
+})
+
+app.get('/abc', (req, res, next)=>{
+    if(req.cookies['user_id'] != null)
+        res.write("Cookie is " + req.cookies['user_id'])
+    else
+        res.write("No cookie")
+    res.send()
+})
+
 app.get('/login', (req, res) => {
     var name = req.query.username
     var pass = req.query.password
@@ -41,18 +57,15 @@ app.get('/login', (req, res) => {
                 res.status(400).send(err)
             }
             if(result.rowCount == 0){
-                res.send("false")
+                res.send({ status: 'false'});
                 res.end()
             }
             else{
                 if(result.rows[0].tenloai == "admin"){
-                    res.send("admin")
+                    res.send({ status: 'true', user: result.rows[0].matk, type: "admin" });
                 }
                 else if(result.rows[0].tenloai == "user"){
-                    var expireTime = 3600
-                    res.cookie('user_id', result.rows[0].matk, {expire : new Date() + expireTime})
-                    console.log(req.cookies['user_id'])
-                    res.send("user")
+                    res.send({ status: 'true', user: result.rows[0].matk, type: "user" });
                 }
             }
         });
@@ -88,7 +101,7 @@ app.get('/load/sp_all', (req, res)=>{
 })
 
 //Load Trang Sp HOT là sp có số lần đấu giá nhiều nhất -> sắp GIẢM 10 sp đầu tiên
-app.get('/load/sp_hot', (req, res)=>{
+app.get('/load/sp_hot', (req, res)=>{    
     pool.connect(function(err,client,done) {
         if(err){
             console.log("not able to get connection "+ err);
@@ -140,6 +153,7 @@ app.get('/load/sp_hettg', (req, res)=>{
 
 //Load Trang Sp CÔNG NGHỆ là sp thuộc loại Công nghệ
 app.get('/load/sp_congnghe', (req, res)=>{
+    console.log("Cookie is " + req.cookies['user_id'])
     pool.connect(function(err,client,done) {
         if(err){
             console.log("not able to get connection "+ err);
@@ -357,7 +371,8 @@ app.get('/daugia/:a/:b/:c/:d', (req, res) => {
 app.get('/create_update_PhieuDG', (req, res)=>{
     var maphien =  parseInt(req.query.maphien)
     // var masp =  parseInt(req.query.masp)
-    var matk =  parseInt(req.query.matk)
+    console.log("Cookie is " + req.cookies['user_id'])
+    var matk =  parseInt(req.cookies['user_id'])
     var giadau =  parseInt(req.query.giadau)
     var tinhtrangphieu =  parseInt(req.query.matinhtrang)
     var maphieu = 0
@@ -379,7 +394,7 @@ app.get('/create_update_PhieuDG', (req, res)=>{
                 res.status(400).send(err)
             }
             var check = result.rowCount
-            console.log(check)
+            console.log("1: update  0: insert" + check)
             if(check != '0'){
                 // khi tk này đã đấu giá sp này rồi thì trong phieudg sp của tk này là update giá và tình trạng
                 maphieu = parseInt(result.rows[0].maphieudg)
