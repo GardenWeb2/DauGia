@@ -647,8 +647,10 @@ function login(e) {
             console.log(data)
             if (data == "user")
                 showHome_User(0)
-            else
+            else if(data == "admin")
                 showHome_Admin()
+            else
+                alert("Username hoặc Password không đúng ")
         },
         error(err) {
             console.log(err)
