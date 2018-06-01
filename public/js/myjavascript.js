@@ -516,15 +516,25 @@ function showHome_Admin() {
 
 function loadSPDaDG() {
     $.ajax({
-        url: '/load/sp_daDG',
+        url: '/load/sp_dadaugia',
         method: 'get',
         success(data) {
+            var i = 1
             data.forEach(x => {
-                $('.sp_daDG').append(
-                    ''
+                $('table').append(
+                    `<tr>` +
+                        `<td>`+ `<p>` + i + `</p>` + `</td>` +
+                        `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
+                        `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
+                        `<td>`+ x.giahientai + `</td>`
+                    + `</tr>`
                 )
+                i++
             })
-        }
+        },
+        error(err){
+            $('.sp_DaDG').status(404)
+        },
     })
 }
 
@@ -621,6 +631,7 @@ function nutAdmin() {
         anRandom()
         $('#header_admin').show()
         $('#spDaDG').show();
+        loadSPDaDG()
     })
 
     $('#btnkhongdaugia').click(function () {
@@ -630,8 +641,6 @@ function nutAdmin() {
         $('#spKhongDG').show();
     })
 }
-
-
 
 function login(e) {
     var name = $('#nametxt').val()

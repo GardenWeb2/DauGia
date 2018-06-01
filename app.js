@@ -199,7 +199,7 @@ app.get('/load/sp_dogiadung', (req, res)=>{
                     and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'`
         ,function(err,result) {
            //call `done()` to release the client back to the pool
-            done(); 
+            done(); // huy ket noi
             if(err){
                 res.end();
                 console.log(err);
@@ -425,21 +425,6 @@ app.get('/create_update_PhieuDG', (req, res)=>{
 
 //          ADMIN       //
 
-app.get('/home_admin', (req, res) => {
-    res.sendfile('spDangDauGia_admin.html')
-})
-
-app.get('/themsp', (req, res) => {
-    res.sendfile('insert_admin.html')
-})
-
-app.get('/spDangDauGia', (req, res) => {
-    res.sendfile('spDangDauGia_admin.html')
-})
-
-app.get('/spDaDauGia', (req, res) => {
-    res.sendfile('spDaDauGia_admin.html')
-})
 app.get('/load/sp_dadaugia', (req, res)=>{
     pool.connect(function(err,client,done) {
         if(err){
@@ -462,9 +447,6 @@ app.get('/load/sp_dadaugia', (req, res)=>{
      });
 })
 
-app.get('/spKhongDauGia', (req, res) => {
-    res.sendfile('spKhongDauGia_admin.html')
-})
 app.get('/load/sp_khongdaugia', (req, res)=>{
     pool.connect(function(err,client,done) {
         if(err){
@@ -545,10 +527,5 @@ app.get('/createProduct', (req, res)=>{
         });
      })
 })
-
-
-
-
-
 
 app.listen(3000, () => console.log("Success"))
