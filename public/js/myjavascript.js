@@ -442,8 +442,15 @@ function nutAdmin() {
     $('#btndadaugia').click(function () {
         anALL()
         anRandom()
-        $('#header_admin').hide()
+        $('#header_admin').show()
         $('#spDaDG').show();
+    })
+
+    $('#btnkhongdaugia').click(function () {
+        anALL()
+        anRandom()
+        $('#header_admin').show()
+        $('#spKhongDG').show();
     })
 }
 
