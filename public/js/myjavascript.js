@@ -4,17 +4,11 @@ function anRandom() {
 }
 
 function anALL() {
-    // an ben user
-    $('.sp_hot').html("")
-    $('.sp_hettg').html("")
-    $('.chitiet_sp').html("")
-    $('.sp_congnghe').html("")
-    $('.sp_thoitrang').html("")
-    $('.sp_dogiadung').html("")
-    $('#congnghe').hide()
-    $('#thoitrang').hide()
-    $('#dogiadung').hide()
-    $('#chitietsp').hide()
+     // an ben user
+     $('#congnghe').hide()
+     $('#thoitrang').hide()
+     $('#dogiadung').hide()
+     $('#chitietsp').hide()
 
     //an ben admin
     $('.sp_DaDG').html("")
@@ -27,23 +21,35 @@ function anALL() {
 }
 
 
-// setInterval cho thời gian thay đổi
-function thoiGianGiam(data, loaiid) {
-    setInterval(function () {
-        for (var i = 0; i < data.length; i++) {
-            var tagId = "#" + loaiid + data[i].masp + ""
+// update xuống postgre sau mỗi 1s
+function capNhatThoigianDG(masp, thoigian) {
+    $.ajax({
+        url: '/capNhatThoiGianDau/' + masp + '/' + thoigian,
+        method: 'get',
+        success(data) {
+            console.log(data)
+        }
+    })
+}
+
+// setInterval cho thời gian thay đổi ở các trang bên ngoài
+function thoiGianGiam(data, loaiid){
+    setInterval(function() {
+        for(var i=0; i< data.length; i++){
+            var tagId = "#" + loaiid + data[i].masp
             var arr = []
             arr = $(tagId).text().split(":"); // 00:03:40
             var gio = parseInt(arr[0])
             var phut = parseInt(arr[1])
             var giay = parseInt(arr[2])
-
-            var thoigiantd = ""
-            if (gio > 0 && phut == 0 && giay == 0) {
+            
+            var thoigiantd =""
+            if (gio > 0 && phut == 0 && giay == 0){
                 gio = gio - 1
+                phut = 59
                 giay = 60
             }
-            else if (phut > 0 && giay == 0) {
+            else if (phut > 0 && giay == 0){
                 phut = phut - 1
                 giay = 60
             }
@@ -51,14 +57,26 @@ function thoiGianGiam(data, loaiid) {
                 giay = giay + 1
             giay = giay - 1
 
+            if(gio < 10 )
+                gio = '0' + gio
+            if(phut < 10 )
+                phut = '0' + phut
+            if(giay < 10 )
+                giay = '0' + giay
+
             thoigiantd = gio + ':' + phut + ':' + giay
             $(tagId).text(thoigiantd)
             console.log($(tagId).text());
+            capNhatThoigianDG(data[i].masp, $(tagId).text())
+           
+            if($(tagId).text() == "00:00:00")
+                capNhatTinhTrangPhienDG(data[i].maphiendg)
         }
     }, 1000)
+    
 }
 
-function loadSPHot(e) {
+function loadSPHot(e,i) {
     f = 'user'
     $.ajax({
         url: '/load/sp_hot',
@@ -70,8 +88,9 @@ function loadSPHot(e) {
                 $('#header_admin').show()
                 f = 'admin'
             }
+             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+             $('.sp_hot').html("") 
             data.forEach(x => {
-
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
@@ -85,7 +104,9 @@ function loadSPHot(e) {
                     x.masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data, "idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            if(i == 0){
+                thoiGianGiam(data,"idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            }
         },
         error(err) {
             $('.sp_hot').status(404)
@@ -93,7 +114,7 @@ function loadSPHot(e) {
     })
 }
 
-function loadSPHetThoiGianDau(e) {
+function loadSPHetThoiGianDau(e,i) {
     f = 'user'
     $.ajax({
         url: '/load/sp_hettg',
@@ -105,6 +126,8 @@ function loadSPHetThoiGianDau(e) {
                 $('#header_admin').show()
                 f = 'admin'
             }
+             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+             $('.sp_hettg').html("") 
             data.forEach(x => {
                 $('.sp_hettg').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
@@ -118,7 +141,9 @@ function loadSPHetThoiGianDau(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data, "idhettg")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            if(i == 0){
+                thoiGianGiam(data,"idhettg")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            }
         },
         error(err) {
             $('.sp_hettg').status(404)
@@ -126,7 +151,7 @@ function loadSPHetThoiGianDau(e) {
     })
 }
 
-function loadSPCongNghe(e) {
+function loadSPCongNghe(e,i) {
     f = 'user'
     $.ajax({
         url: '/load/sp_congnghe',
@@ -139,6 +164,8 @@ function loadSPCongNghe(e) {
                 f = 'admin'
             }
             $('#congnghe').show()
+            // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+           $('.sp_congnghe').html("")
             data.forEach(x => {
                 $('.sp_congnghe').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
@@ -152,7 +179,9 @@ function loadSPCongNghe(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data, "idspcn")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            if(i == 0){
+                thoiGianGiam(data,"idspcn")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            }
         },
         error(err) {
             $('.sp_congnghe').status(404)
@@ -160,7 +189,7 @@ function loadSPCongNghe(e) {
     })
 }
 
-function loadSPDoGiaDung(e) {
+function loadSPDoGiaDung(e,i) {
     f = 'user'
     $.ajax({
         url: '/load/sp_dogiadung',
@@ -173,6 +202,8 @@ function loadSPDoGiaDung(e) {
                 f = 'admin'
             }
             $('#dogiadung').show()
+            // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+            $('.sp_dogiadung').html("")
             data.forEach(x => {
                 $('.sp_dogiadung').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
@@ -187,7 +218,9 @@ function loadSPDoGiaDung(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data, "idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            if(i == 0){
+                thoiGianGiam(data,"idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            }
         },
         error(err) {
             $('.sp_dogiadung').status(404)
@@ -195,7 +228,7 @@ function loadSPDoGiaDung(e) {
     })
 }
 
-function loadSPThoiTrang(e) {
+function loadSPThoiTrang(e,i) {
     f = 'user'
     $.ajax({
         url: '/load/sp_thoitrang',
@@ -209,6 +242,8 @@ function loadSPThoiTrang(e) {
             }
                 
             $('#thoitrang').show()
+            // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+            $('.sp_thoitrang').html("")
             data.forEach(x => {
                 $('.sp_thoitrang').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
@@ -223,7 +258,9 @@ function loadSPThoiTrang(e) {
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data, "idsptt")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            if(i == 0){// chỉ chạy 1 lần đầu
+                thoiGianGiam(data,"idsptt")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            }
         },
         error(err) {
             $('.sp_thoitrang').status(404)
@@ -231,15 +268,28 @@ function loadSPThoiTrang(e) {
     })
 }
 
-function showHome_User() {
+function loadAllSPDangDauGia() {
+    $.ajax({
+        url: '/load/sp_all',
+        method: 'get',
+        success(data) {
+            thoiGianGiam(data,"idchitietsp")    // load thời gian chạy setInterval các sản phẩm trong trang chi tiết
+        },
+        error(err) {
+           console.log(err)
+        },
+    })
+}
+
+function showHome_User(i) {
     anALL()
     $('#login').hide()
     $('#header_user').show()
     $('#hot').show()
     $('#hetthoigian').show()
 
-    loadSPHot('user')
-    loadSPHetThoiGianDau('user')
+    loadSPHot('user',i)
+    loadSPHetThoiGianDau('user',i)
 }
 
 
@@ -248,20 +298,27 @@ $(document).ready(() => {
     anALL()
     $('#header_user').hide()
 
+    loadAllSPDangDauGia()   // load sẵn thời gian chạy tự động trong trang chi tiết của tất cả các sản phẩm
+    var demCongnghe = 0
     $('#btncongnghe').click(function () {
-        loadSPCongNghe('user')
+        loadSPCongNghe('user',demCongnghe)
+        demCongnghe++
     })
 
+    var demThoitrang = 0
     $('#btnthoitrang').click(function () {
-        loadSPThoiTrang('user')
+        loadSPThoiTrang('user', demThoitrang)
+        demThoitrang++
     })
 
+    var demDogiadung = 0
     $('#btndogiadung').click(function () {
-        loadSPDoGiaDung('user')
+        loadSPDoGiaDung('user',demDogiadung)
+        demDogiadung++
     })
 
     $('#btnhome').click(function () {
-        showHome_User();
+        showHome_User(1);
     })
 
     nutAdmin()
@@ -280,6 +337,7 @@ function xemChitiet(e, f) {
                 anALL()
                 anRandom()
                 $('#chitietsp').show()
+                $('.chitiet_sp').html("")
                 data.forEach(x => {
                     $('#ten_ctsp').text(x.info)
                     $('.chitiet_sp').append(
@@ -294,7 +352,7 @@ function xemChitiet(e, f) {
                                         <h4> Kết thúc trong: </h4>
                                         <h2>
                                             <span style="color: red">
-                                                <strong>` + x.thoigiandau + `</strong>
+                                                <strong id="idchitietsp`+ x.masp+`">` + x.thoigiandau + `</strong>
                                             </span>
                                         </h2>
                                         <h4> Giá thầu hiện tại: </h4>
@@ -351,7 +409,9 @@ function xemChitiet(e, f) {
             success(data) {
                 anALL()
                 anRandom()
+                $('#header_admin').show()
                 $('#chitietsp').show()
+                $('.chitiet_sp').html("")
                 data.forEach(x => {
                     $('#ten_ctsp').text(x.info)
                     $('.chitiet_sp').append(
@@ -366,7 +426,7 @@ function xemChitiet(e, f) {
                                         <h4> Kết thúc trong: </h4>
                                         <h2>
                                             <span style="color: red">
-                                                <strong>` + x.thoigiandau + `</strong>
+                                                <strong id="idchitietsp`+ x.masp+`">` + x.thoigiandau + `</strong>
                                             </span>
                                         </h2>
                                         <h4> Giá thầu hiện tại: </h4>
@@ -423,7 +483,7 @@ function giaTienThayDoi(e) {
 
 function dauGia(e) {
     var maphiendg = $('#idmaPhienDG').val()
-    var matk = 2;
+    var matk = 2;       // đợi setCookies
     var giadau = $('#giadau').val()
     var tinhtrangphieu = 1
     // var masanpham = $(e).val()
@@ -451,21 +511,33 @@ function showHome_Admin() {
     $('#login').hide()
     $('#header_admin').show()
     $('#insertSP').show();
+    
 }
 
 function loadSPDaDG() {
     $.ajax({
-        url: '/load/sp_daDG',
+        url: '/load/sp_dadaugia',
         method: 'get',
         success(data) {
+            var i = 1
             data.forEach(x => {
-                $('.sp_daDG').append(
-                    ''
+                $('table').append(
+                    `<tr>` +
+                        `<td>`+ `<p>` + i + `</p>` + `</td>` +
+                        `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
+                        `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
+                        `<td>`+ x.giahientai + `</td>`
+                    + `</tr>`
                 )
+                i++
             })
-        }
+        },
+        error(err){
+            $('.sp_DaDG').status(404)
+        },
     })
 }
+
 function nutAdmin() {
     $('#btnthemsanpham').click(function () {
         anRandom()
@@ -515,32 +587,42 @@ function nutAdmin() {
         })
     })
 
+    var demsphot_ad = 0
+    var demsphtg_ad = 0
+    var demspcnt_ad = 0
+    var demsptt_ad = 0
+    var demspdgd_ad = 0
     $('#btndangdaugia').click(function () {
         $('#btnsphot2').click(function () {
             $('#insertSP').hide()
             $('#hot').show()
-            loadSPHot('admin')
+            loadSPHot('admin', demsphot_ad)
+            demsphot_ad ++
         })
 
         $('#btnspshtg').click(function () {
             $('#insertSP').hide()
             $('#hetthoigian').show()
-            loadSPHetThoiGianDau('admin')
+            loadSPHetThoiGianDau('admin', demsphtg_ad)
+            demsphtg_ad ++
         })
 
         $('#btncongnghe2').click(function () {
             $('#insertSP').hide()
-            loadSPCongNghe('admin')
+            loadSPCongNghe('admin', demspcnt_ad)
+            demspcnt_ad ++
         })
 
         $('#btndogiadung2').click(function () {
             $('#insertSP').hide()
-            loadSPDoGiaDung('admin')
+            loadSPDoGiaDung('admin', demspdgd_ad)
+            demspdgd_ad ++
         })
 
         $('#btnthoitrang2').click(function () {
             $('#insertSP').hide()
-            loadSPThoiTrang('admin')
+            loadSPThoiTrang('admin', demsptt_ad)
+            demsptt_ad ++
         })
     })
 
@@ -549,6 +631,7 @@ function nutAdmin() {
         anRandom()
         $('#header_admin').show()
         $('#spDaDG').show();
+        loadSPDaDG()
     })
 
     $('#btnkhongdaugia').click(function () {
@@ -558,8 +641,6 @@ function nutAdmin() {
         $('#spKhongDG').show();
     })
 }
-
-
 
 function login(e) {
     var name = $('#nametxt').val()
@@ -574,7 +655,7 @@ function login(e) {
         success(data) {
             console.log(data)
             if (data == "user")
-                showHome_User()
+                showHome_User(0)
             else
                 showHome_Admin()
         },
