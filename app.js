@@ -5,13 +5,15 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '1234', 
+    password: '123456', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
 };
 var pool = new pg.Pool(config);
 
+var cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
 app.use(express.static('public'))
 
@@ -47,6 +49,9 @@ app.get('/login', (req, res) => {
                     res.send("admin")
                 }
                 else if(result.rows[0].tenloai == "user"){
+                    var expireTime = 3600
+                    res.cookie('user_id', result.rows[0].matk, {expire : new Date() + expireTime})
+                    console.log(req.cookies['user_id'])
                     res.send("user")
                 }
             }
@@ -66,7 +71,7 @@ app.get('/load/sp_hot', (req, res)=>{
         } 
         client.query(`SELECT s.*,p.*
                     FROM sanpham s, phiendaugia p, tinhtrangphiendg t
-                    WHERE s.masp = p.masp and p.matinhtrang = 1
+                    WHERE s.masp = p.masp
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.giahientai DESC
                     limit 5 `
@@ -91,7 +96,7 @@ app.get('/load/sp_hettg', (req, res)=>{
         } 
         client.query(`SELECT s.*,p.*
                     FROM sanpham s, phiendaugia p, tinhtrangphiendg t
-                    WHERE s.masp = p.masp and p.matinhtrang = 1 
+                    WHERE s.masp = p.masp
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.thoigiandau ASC
                     limit 5 `
@@ -132,7 +137,7 @@ app.get('/load/sp_congnghe', (req, res)=>{
      });
 })
 
-//Load Trang Sp CÔNG NGHỆ là sp thuộc loại Công nghệ
+//Load Trang Sp Thời trang là sp thuộc loại Thời trang
 app.get('/load/sp_thoitrang', (req, res)=>{
     pool.connect(function(err,client,done) {
         if(err){
@@ -141,7 +146,7 @@ app.get('/load/sp_thoitrang', (req, res)=>{
         } 
         client.query(`SELECT s.*, p.*
                     FROM sanpham s, loaisp l, phiendaugia p , tinhtrangphiendg t
-                    WHERE s.loaisp = l.maloaisp and l.tenloai = 'thoi trang' and s.masp = p.masp and p.matinhtrang = 1
+                    WHERE s.loaisp = l.maloaisp and l.tenloai = 'thoi trang' and s.masp = p.masp 
                     and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'`
         ,function(err,result) {
            //call `done()` to release the client back to the pool
@@ -165,7 +170,7 @@ app.get('/load/sp_dogiadung', (req, res)=>{
         } 
         client.query(`SELECT s.*, p.*
                     FROM sanpham s, loaisp l, phiendaugia p, tinhtrangphiendg t
-                    WHERE s.loaisp = l.maloaisp and l.tenloai = 'do gia dung' and s.masp = p.masp and p.matinhtrang = 1
+                    WHERE s.loaisp = l.maloaisp and l.tenloai = 'do gia dung' and s.masp = p.masp
                     and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'`
         ,function(err,result) {
            //call `done()` to release the client back to the pool
@@ -367,12 +372,28 @@ app.get('/load/sp_khongdaugia', (req, res)=>{
 
 app.get('/createProduct', (req, res)=>{
     //console.log(req.query)
+    var tinhtrangphien = 2
     var tensp = req.query.tensp
     var gia =  parseInt(req.query.giatien)
-    var loai =  parseInt(req.query.phanloai)
+    var loai = parseInt(req.query.phanloai)
     var mota = req.query.chitiet
-    var tgbd = req.query.thoigianbd
+    var tgbd = req.query.thoigianbd     // nam-thang-ngay
     var tgdau = req.query.thoigiandau
+    // cắt thành 2 chuỗi: 1/ ngày   2/ giờ
+    var fullTime =[]
+    fullTime = tgbd.split(" ");
+    // cắt chuỗi ngày thành 3 chuỗi: 1/ nam   2/ tháng     3/ngay
+    var date =[]
+    date = fullTime[0].split("-");
+    // lấy ngày hiện tại kiểm tra
+    var d = new Date();
+    console.log(d.getDate())
+    console.log(d.getMonth())   // vì tháng là từ 0-> 11 nên tháng thực tế phải +1
+    var thang = parseInt(d.getMonth()) + 1
+    console.log(d.getFullYear())
+    if(date[2] == d.getDate() && date[1] == thang && date[0] == d.getFullYear())
+        tinhtrangphien = 1
+    
     var hinhanh = req.query.hinhanh
     console.log(hinhanh)
     var arr =[]
@@ -386,7 +407,7 @@ app.get('/createProduct', (req, res)=>{
         }
               
         client.query(`INSERT INTO sanpham(loaisp, hinhanh, info, isnew, isdelete, mota)
-                    values(` + loai + `,'` +  img + `','` + tensp + `', true, false, '` + mota + `')`),
+                    values(` + loai + `,'` +  img + `','` + tensp + `', true, false, '` + mota + `')`)
         client.query(`SELECT s.*
                     FROM sanpham s
                     WHERE s.info = '` + tensp + `'`
@@ -399,11 +420,12 @@ app.get('/createProduct', (req, res)=>{
                 res.status(400).send(err)
             }
             var masp = parseInt(result.rows[0].masp)
+            var ttp = parseInt(tinhtrangphien)
             client.query(`insert into phiendaugia(masp,thoigianbd,thoigiandau,giathapnhat,giahientai,maphieudauthang,matinhtrang)
-                            values(`+ masp + `,'`+ tgbd +`','` + tgdau + `',` + gia + `,` + gia + `,null,2)`)
+                            values(`+ masp + `,'`+ tgbd +`','` + tgdau + `',` + gia + `,` + gia + `,null,` + ttp + `)`)
             res.send("Thành công")
         });
-     });
+     })
 })
 
 
