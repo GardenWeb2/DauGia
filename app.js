@@ -6,7 +6,11 @@ var config = {
     user: 'postgres',
     database: 'daugia', 
 <<<<<<< HEAD
+<<<<<<< HEAD
     password: '123123', 
+=======
+    password: '1234', 
+>>>>>>> 2055b8b2dac80244448260a3ebc5c96587867622
 =======
     password: '1234', 
 >>>>>>> 2055b8b2dac80244448260a3ebc5c96587867622
