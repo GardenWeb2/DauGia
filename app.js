@@ -5,15 +5,9 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    password: '123123', 
-=======
-    password: '1234', 
->>>>>>> 2055b8b2dac80244448260a3ebc5c96587867622
-=======
-    password: '1234', 
->>>>>>> 2055b8b2dac80244448260a3ebc5c96587867622
+
+    password: '123456', 
+
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
