@@ -5,7 +5,7 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '123456', 
+    password: '1234', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
@@ -62,6 +62,31 @@ app.get('/login', (req, res) => {
 app.get('/index', (req, res) => {
     res.sendfile('index.html')
 })
+
+//Load Tất cả sản phẩm để chạy hàm setInterval() trong trang chi tiết
+app.get('/load/sp_all', (req, res)=>{
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`SELECT s.*,p.*
+                    FROM sanpham s, phiendaugia p, tinhtrangphiendg t
+                    WHERE s.masp = p.masp
+                        and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'  `
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            res.json(result.rows)
+        });
+     });
+})
+
 //Load Trang Sp HOT là sp có số lần đấu giá nhiều nhất -> sắp GIẢM 10 sp đầu tiên
 app.get('/load/sp_hot', (req, res)=>{
     pool.connect(function(err,client,done) {
@@ -193,6 +218,99 @@ app.get('/daugiacuatoi', (req, res) => {
 
     res.sendfile('daugiacuatoi.html')
 })
+
+
+// Update Thời gian đấu giá khi nhấn nút trên header_user
+app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
+    var id_sp = parseInt(req.params['id'])
+    var thoigian = req.params['time']
+    //console.log(id_sp+ "    " +thoigian)
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`update phiendaugia
+                    set thoigiandau ='`+ thoigian + `'
+                    where masp = `+ id_sp
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            //res.json(result.rows)
+            res.send("true")
+        })
+     });
+})
+
+
+
+// Update Tình trạng phiên đấu giá khi hết thời gian + 
+// Update mã phiếu đấu thắng vào table phiendaugia nếu phiên đgđấu giá đó có người đấu giá
+app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
+    var maphiendg = parseInt(req.params['maphien'])
+    console.log(maphiendg)
+    var tinhtrangphien = 3       // tên tinhtrangphien = "da dau gia"
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`SELECT p.*
+                    FROM phieudaugia p, tinhtrangphieudg t
+                    WHERE  p.maphiendg = ` + maphiendg + ` and p.matinhtrang = t.matinhtrangphieudg and t.tentinhtrangphieudg = 'dau gia thanh cong'`
+        ,function(err,result) {
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            // phải tách 2 trường hợp là phiên đấu giá này có người đấu hay không
+            // vì gộp chung update k hiểu giá trị tham số null truyền vào biến maphieuthang
+
+            // xét nếu phiên đấu giá này không có ai đấu giá => sẽ k tạo ra phiếu đấu giá
+            if(result.rowCount == 0){
+                tinhtrangphien = 4     // tên tinhtrangphien = "khong co dau gia"
+                client.query(`update phiendaugia
+                        set matinhtrang =`+ tinhtrangphien + 
+                        `where maphiendg = `+ maphiendg + ``
+                ,function(err,result) {
+                    done(); 
+                    if(err){
+                        res.end();
+                        console.log("SAI ROI");
+                        console.log(err);
+                        res.status(400).send(err)
+                    }
+                    res.send("cap nhat tinh trang phien thành công")
+                })   
+            }
+             // nếu có người đấu giá thì lấy maphieudg của người thắng tại phiên đấu giá này
+            else {
+                var maphieuthang = parseInt(result.rows[0].maphieudg)
+                client.query(`update phiendaugia
+                            set matinhtrang =`+ tinhtrangphien + `, maphieudauthang =` + maphieuthang +
+                            `where maphiendg = `+ maphiendg + ``
+                ,function(err,result) {
+                    done(); 
+                    if(err){
+                        res.end();
+                        console.log("SAI ROI");
+                        console.log(err);
+                        res.status(400).send(err)
+                    }
+                    res.send("cap nhat tinh trang phien + mã phiếu thắng thành công")
+                })   
+            }
+        })
+     })
+})
+
 
 // Chi tiết sản phẩm
 app.get('/load/chitiet/:id', (req, res) => {
