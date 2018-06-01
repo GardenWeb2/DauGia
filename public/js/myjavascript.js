@@ -28,22 +28,22 @@ function anALL() {
 
 
 // setInterval cho thời gian thay đổi
-function thoiGianGiam(data, loaiid){
-    setInterval(function() {
-        for(var i=0; i< data.length; i++){
+function thoiGianGiam(data, loaiid) {
+    setInterval(function () {
+        for (var i = 0; i < data.length; i++) {
             var tagId = "#" + loaiid + data[i].masp + ""
             var arr = []
             arr = $(tagId).text().split(":"); // 00:03:40
             var gio = parseInt(arr[0])
             var phut = parseInt(arr[1])
             var giay = parseInt(arr[2])
-            
-            var thoigiantd =""
-            if (gio > 0 && phut == 0 && giay == 0){
+
+            var thoigiantd = ""
+            if (gio > 0 && phut == 0 && giay == 0) {
                 gio = gio - 1
                 giay = 60
             }
-            else if (phut > 0 && giay == 0){
+            else if (phut > 0 && giay == 0) {
                 phut = phut - 1
                 giay = 60
             }
@@ -59,31 +59,33 @@ function thoiGianGiam(data, loaiid){
 }
 
 function loadSPHot(e) {
+    f = 'user'
     $.ajax({
         url: '/load/sp_hot',
         method: 'get',
         success(data) {
-            if (e == 'admin'){
+            if (e == 'admin') {
                 anALL()
                 $('#hetthoigian').hide()
-                $('#header_admin').show() 
-            }   
+                $('#header_admin').show()
+                f = 'admin'
+            }
             data.forEach(x => {
-               
+
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong id="idhot`+ x.masp+`" >` +
+                    `</h3>Thời gian:      <strong id="idhot` + x.masp + `" >` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
                     `</span></br>
-                        <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                        <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
                     x.masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data,"idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            thoiGianGiam(data, "idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_hot').status(404)
@@ -92,29 +94,31 @@ function loadSPHot(e) {
 }
 
 function loadSPHetThoiGianDau(e) {
+    f = 'user'
     $.ajax({
         url: '/load/sp_hettg',
         method: 'get',
         success(data) {
-            if (e == 'admin'){
+            if (e == 'admin') {
                 anALL()
                 $('#hot').hide()
-                $('#header_admin').show() 
-            }   
+                $('#header_admin').show()
+                f = 'admin'
+            }
             data.forEach(x => {
                 $('.sp_hettg').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong id="idhettg`+ x.masp+`">` +
+                    `</h3>Thời gian:      <strong id="idhettg` + x.masp + `">` +
                     x.thoigiandau + `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
                     `</span></br>   
-                    <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data,"idhettg")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            thoiGianGiam(data, "idhettg")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_hettg').status(404)
@@ -123,6 +127,7 @@ function loadSPHetThoiGianDau(e) {
 }
 
 function loadSPCongNghe(e) {
+    f = 'user'
     $.ajax({
         url: '/load/sp_congnghe',
         method: 'get',
@@ -130,23 +135,24 @@ function loadSPCongNghe(e) {
             anALL()
             anRandom()
             if (e == 'admin'){
-                $('#header_admin').show() 
-            }                          
+                $('#header_admin').show()
+                f = 'admin'
+            }
             $('#congnghe').show()
             data.forEach(x => {
                 $('.sp_congnghe').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idspcn`+ x.masp+`">` +
+                    x.info + `</h3>Thời gian:      <strong id="idspcn` + x.masp + `">` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" + `</span></br>
-                                <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                                <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data,"idspcn")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            thoiGianGiam(data, "idspcn")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_congnghe').status(404)
@@ -155,6 +161,7 @@ function loadSPCongNghe(e) {
 }
 
 function loadSPDoGiaDung(e) {
+    f = 'user'
     $.ajax({
         url: '/load/sp_dogiadung',
         method: 'get',
@@ -162,24 +169,25 @@ function loadSPDoGiaDung(e) {
             anALL()
             anRandom()
             if (e == 'admin'){
-                $('#header_admin').show() 
-            }   
+                $('#header_admin').show()
+                f = 'admin'
+            }
             $('#dogiadung').show()
             data.forEach(x => {
                 $('.sp_dogiadung').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idspdgd`+ x.masp+`">` +
+                    x.info + `</h3>Thời gian:      <strong id="idspdgd` + x.masp + `">` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
                     `</span></br>  
-                            <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                            <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data,"idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            thoiGianGiam(data, "idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_dogiadung').status(404)
@@ -188,30 +196,34 @@ function loadSPDoGiaDung(e) {
 }
 
 function loadSPThoiTrang(e) {
+    f = 'user'
     $.ajax({
         url: '/load/sp_thoitrang',
         method: 'get',
         success(data) {
             anALL()
             anRandom()
-            if (e == 'admin')
-                $('#header_admin').show() 
+            if (e == 'admin'){
+                $('#header_admin').show()
+                f = 'admin'
+            }
+                
             $('#thoitrang').show()
             data.forEach(x => {
                 $('.sp_thoitrang').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     x.hinhanh +
                     `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idsptt`+ x.masp+`">` +
+                    x.info + `</h3>Thời gian:      <strong id="idsptt` + x.masp + `">` +
                     x.thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
                     x.giahientai + "K" +
                     `</span></br>   
-                            <button class="btn-default" onclick="xemChitiet(this)" value="` +
+                            <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
                     x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
                 )
             });
-            thoiGianGiam(data,"idsptt")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+            thoiGianGiam(data, "idsptt")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
         },
         error(err) {
             $('.sp_thoitrang').status(404)
@@ -257,79 +269,138 @@ $(document).ready(() => {
 
 
 
-function xemChitiet(e) {
+function xemChitiet(e, f) {
     //alert($(e).val())
     var id = $(e).val()
-    $.ajax({
-        url: '/load/chitiet/' + id,
-        method: 'get',
-        success(data) {
-            anALL()
-            anRandom()
-            $('#chitietsp').show()
-            data.forEach(x => {
-                $('#ten_ctsp').text(x.info)
-                $('.chitiet_sp').append(
-                    `<div class="col-sm-3 col-md-3 hinh">
-                        <div class="thumbnail" style="height:350px">
-                        <img src='./img/` + x.hinhanh + `' width="300px" hight="350px">           
-                </div>
-                    </div>
-                    <div class="col-sm-9 col-md-9">
-                        <div class="thumbnail" style="height:350px">
-                            <div class="caption" aligint="center">
-                                <h4> Kết thúc trong: </h4>
-                                <h2>
-                                    <span style="color: red">
-                                        <strong>` + x.thoigiandau + `</strong>
-                                    </span>
-                                </h2>
-                                <h4> Giá thầu hiện tại: </h4>
-                                <h2>
-                                    <span style="color: black">
-                                        <strong > <span id="giathau">` + x.giahientai + ` </span> K </strong>
-                                    </span>
-                                </h2>
-                                <p>
-                                    <h4> Đấu giá ngay: </h4>
-                                    <div class="input-group">
-                                        <span class="input-group-btn">
+    if (f == 'user'){
+        $.ajax({
+            url: '/load/chitiet/' + id,
+            method: 'get',
+            success(data) {
+                anALL()
+                anRandom()
+                $('#chitietsp').show()
+                data.forEach(x => {
+                    $('#ten_ctsp').text(x.info)
+                    $('.chitiet_sp').append(
+                        `<div class="col-sm-3 col-md-3 hinh">
+                                <div class="thumbnail" style="height:350px">
+                                <img src='./img/` + x.hinhanh + `' width="300px" hight="350px">           
+                        </div>
+                            </div>
+                            <div class="col-sm-9 col-md-9">
+                                <div class="thumbnail" style="height:350px">
+                                    <div class="caption" aligint="center">
+                                        <h4> Kết thúc trong: </h4>
+                                        <h2>
+                                            <span style="color: red">
+                                                <strong>` + x.thoigiandau + `</strong>
+                                            </span>
+                                        </h2>
+                                        <h4> Giá thầu hiện tại: </h4>
+                                        <h2>
+                                            <span style="color: black">
+                                                <strong > <span id="giathau">` + x.giahientai + ` </span> K </strong>
+                                            </span>
+                                        </h2>
+                                        <p>
+                                            <h4> Đấu giá ngay: </h4>
+                                            <div class="input-group">
+                                                <span class="input-group-btn">
                                                 <button onclick="giaTienThayDoi(this)" value="tru" class="btn btn-danger btn-number" data-type="minus" data-field="quant">
                                                 <span class="glyphicon glyphicon-minus"></span>
-                                            </button>
-                                        </span>
-                                        <input value="`+ x.giahientai + `" id="giadau" class="form-control input-number" type="text" style="width: 50px">
-                                        <button onclick="giaTienThayDoi(this)" value="cong" class="btn btn-success btn-number" data-type="plus" data-field="quant">
-                                            <span class="glyphicon glyphicon-plus"></span>
-                                        </button>
+                                                </button>
+                                                </span>
+                                                <input value="`+ x.giahientai + `" id="giadau" class="form-control input-number" type="text" style="width: 50px">
+                                                <button onclick="giaTienThayDoi(this)" value="cong" class="btn btn-success btn-number" data-type="plus" data-field="quant">
+                                                    <span class="glyphicon glyphicon-plus"></span>
+                                                </button>
+                                            </div>
+                                            <br>
+                                            
+                                            <button onclick="dauGia(this)" value class="btn btn-default" role="button"> Đấu Giá </button>
+                                        </p>
+                                        <input id="deltasoluong" value="`+ x.giatri + `"type="hidden">
+                                        <input id="idmaPhienDG" value="`+ x.maphiendg + `"type="hidden">
+                                        
                                     </div>
-                                    <br>
-                                    
-                                    <button onclick="dauGia(this)" value class="btn btn-default" role="button"> Đấu Giá </button>
-                                </p>
-                                <input id="deltasoluong" value="`+ x.giatri + `"type="hidden">
-                                <input id="idmaPhienDG" value="`+ x.maphiendg + `"type="hidden">
-                                
+                                </div>
                             </div>
+                                <!--    Phần dưới chi tiết thông tin       !-->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3> Thông tin sản phẩm </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <span> <p> Chi tiết sản phẩm</p>`+ x.mota + `</span>
+                                    </div>
+                                    </div> `
+                    )
+    
+                });
+            },
+            error(err) {
+                console.log(err)
+            },
+        })
+    }
+    else{
+        $.ajax({
+            url: '/load/chitiet/' + id,
+            method: 'get',
+            success(data) {
+                anALL()
+                anRandom()
+                $('#chitietsp').show()
+                data.forEach(x => {
+                    $('#ten_ctsp').text(x.info)
+                    $('.chitiet_sp').append(
+                        `<div class="col-sm-3 col-md-3 hinh">
+                                <div class="thumbnail" style="height:350px">
+                                <img src='./img/` + x.hinhanh + `' width="300px" hight="350px">           
                         </div>
-                    </div>
-                        <!--    Phần dưới chi tiết thông tin       !-->
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3> Thông tin sản phẩm </h3>
                             </div>
-                            <div class="panel-body">
-                                <span> <p> Chi tiết sản phẩm</p>`+ x.mota + `</span>
+                            <div class="col-sm-9 col-md-9">
+                                <div class="thumbnail" style="height:350px">
+                                    <div class="caption" aligint="center">
+                                        <h4> Kết thúc trong: </h4>
+                                        <h2>
+                                            <span style="color: red">
+                                                <strong>` + x.thoigiandau + `</strong>
+                                            </span>
+                                        </h2>
+                                        <h4> Giá thầu hiện tại: </h4>
+                                        <h2>
+                                            <span style="color: black">
+                                                <strong > <span id="giathau">` + x.giahientai + ` </span> K </strong>
+                                            </span>
+                                        </h2>
+                                        
+                                        <input id="deltasoluong" value="`+ x.giatri + `"type="hidden">
+                                        <input id="idmaPhienDG" value="`+ x.maphiendg + `"type="hidden">
+                                        
+                                    </div>
+                                </div>
                             </div>
-                            </div> `
-                )
-
-            });
-        },
-        error(err) {
-            console.log(err)
-        },
-    })
+                                <!--    Phần dưới chi tiết thông tin       !-->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3> Thông tin sản phẩm </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <span> <p> Chi tiết sản phẩm</p>`+ x.mota + `</span>
+                                    </div>
+                                    </div> `
+                    )
+    
+                });
+            },
+            error(err) {
+                console.log(err)
+            },
+        })
+    }
+    
 }
 
 function giaTienThayDoi(e) {
@@ -445,14 +516,6 @@ function nutAdmin() {
     })
 
     $('#btndangdaugia').click(function () {
-        $('.menu').slideToggle(0, function () { //hien thi cac nut trong menu bang cach truot xuong
-            $('#btnsphot2').show()
-            $('#btnspshtg').show()
-            $('#btncongnghe2').show()
-            $('#btndogiadung2').show()
-            $('#btnthoitrang2').show()
-        })
-
         $('#btnsphot2').click(function () {
             $('#insertSP').hide()
             $('#hot').show()
@@ -465,17 +528,17 @@ function nutAdmin() {
             loadSPHetThoiGianDau('admin')
         })
 
-        $('#btncongnghe2').click(function(){
+        $('#btncongnghe2').click(function () {
             $('#insertSP').hide()
             loadSPCongNghe('admin')
         })
 
-        $('#btndogiadung2').click(function(){
+        $('#btndogiadung2').click(function () {
             $('#insertSP').hide()
             loadSPDoGiaDung('admin')
         })
 
-        $('#btnthoitrang2').click(function(){
+        $('#btnthoitrang2').click(function () {
             $('#insertSP').hide()
             loadSPThoiTrang('admin')
         })
