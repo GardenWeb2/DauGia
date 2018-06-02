@@ -53,8 +53,10 @@ function thoiGianGiam(data, loaiid){
                 phut = phut - 1
                 giay = 60
             }
-            else if (gio == 0 && phut == 0 && giay == 0)
+            else if (gio == 0 && phut == 0 && giay == 0){
                 giay = giay + 1
+            }
+                
             giay = giay - 1
 
             if(gio < 10 )
@@ -75,6 +77,64 @@ function thoiGianGiam(data, loaiid){
     }, 1000)
     
 }
+
+// setInterval cho thời gian thay đổi ở các trang chi tiết
+function thoiGianGiamChiTiet(masp, loaiid){
+    setInterval(function() {
+        var tagId = "#" + loaiid + masp
+        var arr = []
+        arr = $(tagId).text().split(":"); // 00:03:40
+        var gio = parseInt(arr[0])
+        var phut = parseInt(arr[1])
+        var giay = parseInt(arr[2])
+
+        var thoigiantd =""
+        if (gio > 0 && phut == 0 && giay == 0){
+            gio = gio - 1
+            phut = 59
+            giay = 60
+        }
+        else if (phut > 0 && giay == 0){
+            phut = phut - 1
+            giay = 60
+        }
+        else if (gio == 0 && phut == 0 && giay == 0)
+            giay = giay + 1
+
+        giay = giay - 1
+
+        if(gio < 10 )
+            gio = '0' + gio
+        if(phut < 10 )
+            phut = '0' + phut
+        if(giay < 10 )
+            giay = '0' + giay
+
+        thoigiantd = gio + ':' + phut + ':' + giay
+        $(tagId).text(thoigiantd)
+        console.log("THoi gian luc nay: " + $(tagId).text());
+        //capNhatThoigianDG(masp, $(tagId).text())
+        
+        // if($(tagId).text() == "00:00:00")
+        //     capNhatTinhTrangPhienDG(data[i].maphiendg)
+    }, 1000)
+    
+}
+
+function capNhatTinhTrangPhienDG(maphien) {
+    
+    $.ajax({
+        url: '/capNhatTinhTrangPhien/' + maphien,
+        method: 'get',
+        success(data) {
+            console.log(data)
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
+}
+
 
 function loadSPHot(e,i) {
     f = 'user'
@@ -281,6 +341,8 @@ function loadAllSPDangDauGia() {
     })
 }
 
+
+
 function showHome_User(i) {
     anALL()
     $('#login').hide()
@@ -393,6 +455,7 @@ function xemChitiet(e, f) {
                                     </div>
                                     </div> `
                     )
+                    //thoiGianGiamChiTiet(x.masp, "idchitietsp")
     
                 });
             },
