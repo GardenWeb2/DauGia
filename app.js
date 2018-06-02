@@ -5,7 +5,7 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '123456', 
+    password: '1234', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
@@ -221,10 +221,10 @@ app.get('/shopping', (req, res) => {
     res.sendfile('shopping-cart.html')
 })
 
-app.get('/daugiacuatoi', (req, res) => {
+// app.get('/daugiacuatoi', (req, res) => {
 
-    res.sendfile('daugiacuatoi.html')
-})
+//     res.sendfile('daugiacuatoi.html')
+// })
 
 
 // Update Thời gian đấu giá mỗi 1s
@@ -329,7 +329,34 @@ app.get('/load/daugiacuatoi', (req, res)=>{
                     FROM sanpham s, phiendaugia p, tinhtrangphiendg t, phieudaugia ph, tinhtrangphieudg tt
                     WHERE s.masp = p.masp and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                           and p.maphiendg = ph.maphiendg and ph.matinhtrang = tt.matinhtrangphieudg 
-                          and ph.matk = ` +  matk
+                          and ph.matk = ` +  matk + ``
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            res.json(result.rows)
+        });
+     });
+})
+
+// Load các sản phẩm mà user đấu giá thành công khi nhấn nút Giỏ Hàng trên header_user
+app.get('/load/gioHang', (req, res)=>{
+    console.log("Cookie is " + req.cookies['user_id'])
+    var matk =  parseInt(req.cookies['user_id'])
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`SELECT s.*, p.*, ph.*, tt.*
+                    FROM sanpham s, phiendaugia p, tinhtrangphiendg t, phieudaugia ph, tinhtrangphieudg tt
+                    WHERE s.masp = p.masp and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'da dau gia'
+                          and p.maphiendg = ph.maphiendg and ph.matinhtrang = tt.matinhtrangphieudg 
+                          and ph.matk = ` +  matk + ``
         ,function(err,result) {
            //call `done()` to release the client back to the pool
             done(); 

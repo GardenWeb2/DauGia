@@ -63,7 +63,7 @@
                         <i class="fa fa-user"></i> <a id="idUserHeader"> User </a>
                     </button>
                     <li>
-                        <button class="navbar-brand">
+                        <button class="navbar-brand" id="btnGioHang">
                             <i class="fa fa-shopping-cart"></i> Giỏ Hàng</a>
                         </button>
                     </li>
@@ -315,23 +315,40 @@
                 <h2> Các sản phẩm đang đấu giá </h2>
             </div>
             <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Hình ảnh</th>
-                        <th>Giá đấu của bạn </th>
-                        <th>Giá đấu hiện tại </th>
-                        <th>Tình trạng đấu </th>
-                    </tr>
-                </thead>
+                
                 <tbody>
-                    <div class="lichSuDG">
-                    </div>
+                    <div class="lichSuDG">  </div>
                 </tbody>
             </table>
         </div>
 
+        <!--    Shopping-cart       !-->
+        <div class="panel panel-default" id="idGioHang">
+            <div class="navigat">
+                <h2>GIỎ HÀNG SẢN PHẦM</h2>
+            </div>
+            <div class="panel-body">
+                <form>
+                    <table class="table table-hover">
+                        
+                    <tfoot class="tongtien">
+
+                    </tfoot>
+                </table>
+                </form>
+                <div class="row">
+                        <div class="col-md-12">
+                            <a class="btn btn-success" role="button" id="btnTiepTucMua">
+                                <i class="fa fa-mail-reply"></i> Tiếp tục mua hàng
+                            </a>
+                            <button type="submit" id="btnThanhToan" class="btn btn-danger">
+                                <i class="fa fa-check"></i> Thanh toán
+                            </button>
+                        </div>
+                </div>
+            </div>
+        </div>
+        
 
         <!--DA DAU GIA -->
         <div class="panel panel-default" id="spDaDG">

@@ -10,6 +10,7 @@ function anALL() {
     $('#dogiadung').hide()
     $('#chitietsp').hide()
     $('#CacSPDangDauGia').hide()
+    $('#idGioHang').hide()
 
     //an ben admin
     $('.sp_DaDG').html("")
@@ -376,6 +377,12 @@ $(document).ready(() => {
     anALL()
     $('#header_user').hide()
 
+    var demHome = 1
+    $('#btnhome').click(function () {
+        showHome_User(demHome);
+        demHome++
+    })
+
     var demCongnghe = 0
     $('#btncongnghe').click(function () {
         loadSPCongNghe('user', demCongnghe)
@@ -401,11 +408,21 @@ $(document).ready(() => {
         loadDauGiaCuaToi()
     })
     
-    var demHome = 1
-    $('#btnhome').click(function () {
-        showHome_User(demHome);
-        demHome++
+    $('#btnGioHang').click(function () {
+        anALL()
+        anRandom()
+        $('#idGioHang').show();
+        loadGioHang()
+        $('#btnTiepTucMua').click(function () {
+            showHome_User(demHome);
+            demHome++
+        })
+        $('#btnThanhToan').click(function () {
+            thanhToan()
+        })
     })
+
+    
 
     nutAdmin()      // các nút trên header_admin bên trang admin
 })
@@ -416,26 +433,84 @@ function loadDauGiaCuaToi() {
         method: 'get',
         success(data) {
             var i = 1
+            $('.table').html("")
+            $('table').append(
+                `<thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Giá đấu của bạn </th>
+                        <th>Giá đấu hiện tại </th>
+                        <th>Tình trạng đấu </th>
+                    </tr>
+                </thead>`
+            )
             data.forEach(x => {
                 $('table').append(
                     `<tr>` +
                         `<td>`+ `<p>` + i + `</p>` + `</td>` +
                         `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
                         `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
-                        `<td>`+ x.giadau + ` K </td>`
-                        `<td>`+ x.giahientai + ` K </td>`
-                        `<td>`+ x.tinhtrangphieudg + `</td>`
-                    + `</tr>`
+                        `<td>`+ x.giadau + ` K </td>` +
+                        `<td>`+ x.giahientai + ` K </td>` +
+                        `<td>`+ x.tentinhtrangphieudg + `</td>` +
+                     `</tr>`
                 )
                 i++
             })
+          
         },
         error(err){
-            $('.sp_DaDG').status(404)
+            $('.lichSuDG').status(404)
         },
     })
 }
 
+// Giỏ hàng của người dùng
+function loadGioHang() {
+    $.ajax({
+        url: '/load/gioHang',
+        method: 'get',
+        success(data) {
+            var tongtien = 0
+            $('.table').html("")
+            $('table').append(
+                `<thead>
+                    <tr>
+                        <th class="col-sm-2">Sản phẩm</th>
+                        <th class="col-sm-2">Số Lượng</th>
+                        <th class="col-sm-2">Đơn Giá</th>
+                    </tr>
+                </thead>`
+            )
+            data.forEach(x => { 
+                tongtien += parseInt(x.giadau)
+                $('table').append(
+                    `<tr>` +
+                        `<td class="col-sm-2">` + x.info  + `<td>` +
+                        `<td class="col-sm-2">   1 </td>` +
+                        `<td class="col-sm-2">`+ x.giadau + `000 </td>` +
+                     `</tr>`
+                )
+            })
+            $('.tongtien').append(
+                `<tr>
+                    <td>
+                        <h4>Thành tiền: ` + tongtien.toString() +`000 VNĐ </h4>
+                    </td>
+                </tr>`
+            )
+        },
+        error(err){
+            console.log(err)
+        },
+    })
+}
+
+function thanhToan() {
+    //
+}
 
 function xemChitiet(e, f) {
     //alert($(e).val())
