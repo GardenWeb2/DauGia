@@ -8,7 +8,7 @@ var config = {
     password: '1234', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
-    idleTimeoutMillis: 30000, // how long a client is allowed to remain idle before being closed
+    idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
 };
 var pool = new pg.Pool(config);
 
@@ -215,6 +215,7 @@ app.get('/load/sp_dogiadung', (req, res)=>{
         });
      });
 })
+
 app.get('/shopping', (req, res) => {
 
     res.sendfile('shopping-cart.html')
@@ -226,11 +227,10 @@ app.get('/daugiacuatoi', (req, res) => {
 })
 
 
-// Update Thời gian đấu giá khi nhấn nút trên header_user
+// Update Thời gian đấu giá mỗi 1s
 app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
     var id_sp = parseInt(req.params['id'])
     var thoigian = req.params['time']
-    //console.log(id_sp+ "    " +thoigian)
     pool.connect(function(err,client,done) {
         if(err){
             console.log("not able to get connection "+ err);
@@ -244,7 +244,7 @@ app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
             done(); 
             if(err){
                 res.end();
-                console.log(err);
+                console.log("Loi:   " +  err);
                 res.status(400).send(err)
             }
             //res.json(result.rows)
@@ -259,7 +259,6 @@ app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
 // Update mã phiếu đấu thắng vào table phiendaugia nếu phiên đgđấu giá đó có người đấu giá
 app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
     var maphiendg = parseInt(req.params['maphien'])
-    console.log(maphiendg)
     var tinhtrangphien = 3       // tên tinhtrangphien = "da dau gia"
     pool.connect(function(err,client,done) {
         if(err){
@@ -267,8 +266,8 @@ app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
             res.status(400).send(err);
         } 
         client.query(`SELECT p.*
-                    FROM phieudaugia p, tinhtrangphieudg t
-                    WHERE  p.maphiendg = ` + maphiendg + ` and p.matinhtrang = t.matinhtrangphieudg and t.tentinhtrangphieudg = 'dau gia thanh cong'`
+                    FROM phieudaugia p
+                    WHERE  p.maphiendg = ` + maphiendg // + ` and p.matinhtrang = t.matinhtrangphieudg and t.tentinhtrangphieudg = 'dau gia thanh cong'`
         ,function(err,result) {
             done(); 
             if(err){
@@ -283,13 +282,13 @@ app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
             if(result.rowCount == 0){
                 tinhtrangphien = 4     // tên tinhtrangphien = "khong co dau gia"
                 client.query(`update phiendaugia
-                        set matinhtrang =`+ tinhtrangphien + 
-                        `where maphiendg = `+ maphiendg + ``
+                        set matinhtrang =`+ tinhtrangphien + `, thoigiandau = '00:00:00'
+                        where maphiendg = `+ maphiendg + ``
                 ,function(err,result) {
                     done(); 
                     if(err){
                         res.end();
-                        console.log("SAI ROI");
+                        console.log("SAI ROI 1");
                         console.log(err);
                         res.status(400).send(err)
                     }
@@ -300,13 +299,13 @@ app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
             else {
                 var maphieuthang = parseInt(result.rows[0].maphieudg)
                 client.query(`update phiendaugia
-                            set matinhtrang =`+ tinhtrangphien + `, maphieudauthang =` + maphieuthang +
-                            `where maphiendg = `+ maphiendg + ``
+                            set matinhtrang =`+ tinhtrangphien + `, maphieudauthang =` + maphieuthang + `, thoigiandau = '00:00:00'
+                            where maphiendg = `+ maphiendg + ``
                 ,function(err,result) {
                     done(); 
                     if(err){
                         res.end();
-                        console.log("SAI ROI");
+                        console.log("SAI ROI 2");
                         console.log(err);
                         res.status(400).send(err)
                     }
@@ -317,6 +316,32 @@ app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
      })
 })
 
+// Load các sản phẩm mà user đang đấu giá khi nhấn nút Đấu Giá Của Tôi trên header_user
+app.get('/load/daugiacuatoi', (req, res)=>{
+    console.log("Cookie is " + req.cookies['user_id'])
+    var matk =  parseInt(req.cookies['user_id'])
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+        client.query(`SELECT s.*, p.*, ph.*, tt.*
+                    FROM sanpham s, phiendaugia p, tinhtrangphiendg t, phieudaugia ph, tinhtrangphieudg tt
+                    WHERE s.masp = p.masp and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
+                          and p.maphiendg = ph.maphiendg and ph.matinhtrang = tt.matinhtrangphieudg 
+                          and ph.matk = ` +  matk
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            res.json(result.rows)
+        });
+     });
+})
 
 // Chi tiết sản phẩm
 app.get('/load/chitiet/:id', (req, res) => {
@@ -359,7 +384,8 @@ app.get('/daugia/:a/:b/:c/:d', (req, res) => {
     res.send(gia.toString())
 })
 
-// Thực hiện đấu giá
+// Thực hiện đấu giá (QUAN TRỌNG)
+// cập nhật hoặc tạo 1 phiếu đấu giá khi user chọn 1 sp đấu giá
 app.get('/create_update_PhieuDG', (req, res)=>{
     var maphien =  parseInt(req.query.maphien)
     // var masp =  parseInt(req.query.masp)
@@ -399,15 +425,9 @@ app.get('/create_update_PhieuDG', (req, res)=>{
                 // khi tk này chưa đấu giá sp này thì ta tạo 1 phiếudg sp này cho tk hiện tại
                 client.query(`insert into phieudaugia(maphiendg,matk,giadau,matinhtrang)
                             values(`+ maphien + `,'`+ matk +`','` + giadau + `',` + tinhtrangphieu + `)`)
-                // lấy được maphieudg vừa đc random ở postgre => SAI chưa làm đc
-                // client.query(`SELECT p.*
-                //             FROM phieudaugia p
-                //             WHERE p.maphiendg = ` + maphien + ` and p.matk = ` + matk + ``   
-                // ,function(err,result) {
-                //     done(); 
-                //     maphieu = parseInt(result.rows[0].maphieudg)
-                // });         
+                    
             }    
+
             console.log("maphieu:" + maphieu)
             console.log("MAPHIEN:" + maphien)
             //update lại tình trạng của các tài khoản khác cũng đấu giá sản phẩm này thành dg không thành công
@@ -422,8 +442,8 @@ app.get('/create_update_PhieuDG', (req, res)=>{
             client.query(`SELECT p.*
                     FROM phiendaugia p
                     WHERE p.maphiendg =` + maphien
-            ,function(err,result) {
-                res.json(result.rows[0])
+            ,function(err,result1) {
+                res.json(result1.rows[0])
             });
         });
      });

@@ -5,10 +5,11 @@ function anRandom() {
 
 function anALL() {
      // an ben user
-     $('#congnghe').hide()
-     $('#thoitrang').hide()
-     $('#dogiadung').hide()
-     $('#chitietsp').hide()
+    $('#congnghe').hide()
+    $('#thoitrang').hide()
+    $('#dogiadung').hide()
+    $('#chitietsp').hide()
+    $('#CacSPDangDauGia').hide()
 
     //an ben admin
     $('.sp_DaDG').html("")
@@ -21,29 +22,21 @@ function anALL() {
 }
 
 
-// update xuống postgre sau mỗi 1s
-function capNhatThoigianDG(masp, thoigian) {
-    $.ajax({
-        url: '/capNhatThoiGianDau/' + masp + '/' + thoigian,
-        method: 'get',
-        success(data) {
-            console.log(data)
-        }
-    })
-}
-
 // setInterval cho thời gian thay đổi ở các trang bên ngoài
-function thoiGianGiam(data, loaiid){
+function thoiGianGiam(data, loaiid, solan){
     setInterval(function() {
-        for(var i=0; i< data.length; i++){
-            var tagId = "#" + loaiid + data[i].masp
-            var arr = []
-            arr = $(tagId).text().split(":"); // 00:03:40
+        var tagId = "#" + loaiid + data.masp + "_" + solan
+        var arr = []
+        arr = $(tagId).text().split(":"); // 00:03:40
+        // if(arr[0] == ""){      // nghĩa là khi ng dùng nhấn gọi lại 1 button nào đó trên header
+        //     console.log("Thẻ id này đã bị xóa, khi nhấn lại 1 button ")
+        // }
+        if(arr[0] != ""){
             var gio = parseInt(arr[0])
             var phut = parseInt(arr[1])
             var giay = parseInt(arr[2])
             
-            var thoigiantd =""
+            var thoigiantd = ""
             if (gio > 0 && phut == 0 && giay == 0){
                 gio = gio - 1
                 phut = 59
@@ -68,14 +61,18 @@ function thoiGianGiam(data, loaiid){
 
             thoigiantd = gio + ':' + phut + ':' + giay
             $(tagId).text(thoigiantd)
-            //console.log($(tagId).text());
-            capNhatThoigianDG(data[i].masp, $(tagId).text())
-           
-            if($(tagId).text() == "00:00:00")
-                capNhatTinhTrangPhienDG(data[i].maphiendg)
+            
+            // nếu sp còn thời gian thì cập nhật thời gian thay đổi xuống database
+            // ngược lại nếu hết thời gian thì sẽ update tình trạng phiên đấu giá 
+            // hoặc có thể update thêm người đấu giá thắng sp + thời gian = '00:00:00'
+            if(thoigiantd != "00:00:00"){ //$(tagId).text() != "00:00:01" &&
+                capNhatThoigianDG(data.masp, thoigiantd)
+            }
+            else{    // khi hết thời gian thì cập nhật tình trạng, thời gian
+                capNhatTinhTrangPhienDG(data.maphiendg)
+            }
         }
     }, 1000)
-    
 }
 
 // setInterval cho thời gian thay đổi ở các trang chi tiết, 
@@ -115,10 +112,21 @@ function thoiGianGiamChiTiet(data, loaiid){
 
             thoigiantd = gio + ':' + phut + ':' + giay
             $(tagId).text(thoigiantd)
-           
         }
     }, 1000)
 }
+
+// update xuống postgre sau mỗi 1s
+function capNhatThoigianDG(masp, thoigian) {
+    $.ajax({
+        url: '/capNhatThoiGianDau/' + masp + '/' + thoigian,
+        method: 'get',
+        success(data) {
+            //console.log(data)
+        }
+    })
+}
+
 
 function capNhatTinhTrangPhienDG(maphien) {
     
@@ -137,6 +145,7 @@ function capNhatTinhTrangPhienDG(maphien) {
 
 function loadSPHot(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_hot',
         method: 'get',
@@ -147,25 +156,27 @@ function loadSPHot(e,i) {
                 $('#header_admin').show()
                 f = 'admin'
             }
-             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+             // Không được gộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
             $('.sp_hot').html("") 
-            data.forEach(x => {
+            
+            for(var i=0; i< data.length; i++){
+                var tagId = "#idhot" + data[i].masp
+                $(tagId).text("")
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong id="idhot` + x.masp + `" >` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idhot` + data[i].masp +`_`+ solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
+                    data[i].giahientai + "K" +
                     `</span></br>
                         <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `" > Đấu Giá Ngay</button></div></div></div>`
+                        data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idhot", solan)
             }
+            
         },
         error(err) {
             $('.sp_hot').status(404)
@@ -175,6 +186,7 @@ function loadSPHot(e,i) {
 
 function loadSPHetThoiGianDau(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_hettg',
         method: 'get',
@@ -185,23 +197,22 @@ function loadSPHetThoiGianDau(e,i) {
                 $('#header_admin').show()
                 f = 'admin'
             }
-             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+             // Không được gộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
              $('.sp_hettg').html("") 
-            data.forEach(x => {
+            for(var i=0; i< data.length; i++){
                 $('.sp_hettg').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong id="idhettg` + x.masp + `">` +
-                    x.thoigiandau + `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
-                    `</span></br>   
-                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idhettg` + data[i].masp +`_`+ solan + `" >` +
+                    data[i].thoigiandau +
+                    `</strong><br> Giá:<span style="color: red">` +
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                        <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                        data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idhettg")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idhettg", solan)
             }
         },
         error(err) {
@@ -212,6 +223,7 @@ function loadSPHetThoiGianDau(e,i) {
 
 function loadSPCongNghe(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_congnghe',
         method: 'get',
@@ -224,22 +236,21 @@ function loadSPCongNghe(e,i) {
             }
             $('#congnghe').show()
             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
-           $('.sp_congnghe').html("")
-            data.forEach(x => {
+            $('.sp_congnghe').html("")
+            for (var i = 0; i < data.length; i++) {
                 $('.sp_congnghe').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idspcn` + x.masp + `">` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idspcn` + data[i].masp + `_` + solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" + `</span></br>
-                                <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                    data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idspcn")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idspcn", solan)
             }
         },
         error(err) {
@@ -250,6 +261,7 @@ function loadSPCongNghe(e,i) {
 
 function loadSPDoGiaDung(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_dogiadung',
         method: 'get',
@@ -263,22 +275,20 @@ function loadSPDoGiaDung(e,i) {
             $('#dogiadung').show()
             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
             $('.sp_dogiadung').html("")
-            data.forEach(x => {
+            for (var i = 0; i < data.length; i++) {
                 $('.sp_dogiadung').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idspdgd` + x.masp + `">` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idspdgd` + data[i].masp + `_` + solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
-                    `</span></br>  
-                            <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                    data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idspdgd", solan)
             }
         },
         error(err) {
@@ -289,6 +299,7 @@ function loadSPDoGiaDung(e,i) {
 
 function loadSPThoiTrang(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_thoitrang',
         method: 'get',
@@ -303,22 +314,20 @@ function loadSPThoiTrang(e,i) {
             $('#thoitrang').show()
             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
             $('.sp_thoitrang').html("")
-            data.forEach(x => {
+            for (var i = 0; i < data.length; i++) {
                 $('.sp_thoitrang').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idsptt` + x.masp + `">` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idsptt` + data[i].masp + `_` + solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
-                    `</span></br>   
-                            <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                    data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){// chỉ chạy 1 lần đầu
-                thoiGianGiam(data,"idsptt")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idsptt", solan)
             }
         },
         error(err) {
@@ -369,7 +378,7 @@ $(document).ready(() => {
 
     var demCongnghe = 0
     $('#btncongnghe').click(function () {
-        loadSPCongNghe('user',demCongnghe)
+        loadSPCongNghe('user', demCongnghe)
         demCongnghe++
     })
 
@@ -381,17 +390,51 @@ $(document).ready(() => {
 
     var demDogiadung = 0
     $('#btndogiadung').click(function () {
-        loadSPDoGiaDung('user',demDogiadung)
+        loadSPDoGiaDung('user', demDogiadung)
         demDogiadung++
     })
 
+    $('#btnDauGiaCuaToi').click(function () {
+        anALL()
+        anRandom()
+        $('#CacSPDangDauGia').show();
+        loadDauGiaCuaToi()
+    })
+    
+    var demHome = 1
     $('#btnhome').click(function () {
-        showHome_User(1);
+        showHome_User(demHome);
+        demHome++
     })
 
-    nutAdmin()
+    nutAdmin()      // các nút trên header_admin bên trang admin
 })
 
+function loadDauGiaCuaToi() {
+    $.ajax({
+        url: '/load/daugiacuatoi',
+        method: 'get',
+        success(data) {
+            var i = 1
+            data.forEach(x => {
+                $('table').append(
+                    `<tr>` +
+                        `<td>`+ `<p>` + i + `</p>` + `</td>` +
+                        `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
+                        `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
+                        `<td>`+ x.giadau + ` K </td>`
+                        `<td>`+ x.giahientai + ` K </td>`
+                        `<td>`+ x.tinhtrangphieudg + `</td>`
+                    + `</tr>`
+                )
+                i++
+            })
+        },
+        error(err){
+            $('.sp_DaDG').status(404)
+        },
+    })
+}
 
 
 function xemChitiet(e, f) {
@@ -581,6 +624,42 @@ function showHome_Admin() {
     
 }
 
+function taoSPMoi() {
+    var ten = $('#ProName').val();
+    var gia = $('#Price').val();
+    var checkbox = document.getElementsByName("loaisp");
+    var loai = 1;
+    for (var i = 0; i < checkbox.length; i++) {
+        if (checkbox[i].checked === true) {
+            var loai = checkbox[i].value;
+        }
+    }
+    var tgbd = $('#thoigianbd').val();
+    var tgdau = $('#thoigiandaugia').val();
+    var mota = $('#FullDes').val();
+    var img = $('#idImage').val();
+
+    $.ajax({
+        url: '/createProduct',
+        method: 'get',
+        data: {
+            tensp: ten,
+            giatien: gia,
+            phanloai: loai,
+            thoigianbd: tgbd,
+            thoigiandau: tgdau,
+            chitiet: mota,
+            hinhanh: img
+        },
+        success(data) {
+            alert(data)
+        },
+        error(err) {
+            $('.thongbao').status(404)
+        },
+    })
+}
+
 function loadSPDaDG() {
     $.ajax({
         url: '/load/sp_dadaugia',
@@ -605,6 +684,7 @@ function loadSPDaDG() {
     })
 }
 
+
 function nutAdmin() {
     $('#btnthemsanpham').click(function () {
         anRandom()
@@ -618,39 +698,7 @@ function nutAdmin() {
         anALL()
         $('#header_admin').show()
         $('#insertSP').show();
-        var ten = $('#ProName').val();
-        var gia = $('#Price').val();
-        var checkbox = document.getElementsByName("loaisp");
-        var loai = 1;
-        for (var i = 0; i < checkbox.length; i++) {
-            if (checkbox[i].checked === true) {
-                var loai = checkbox[i].value;
-            }
-        }
-        var tgbd = $('#thoigianbd').val();
-        var tgdau = $('#thoigiandaugia').val();
-        var mota = $('#FullDes').val();
-        var img = $('#idImage').val();
-
-        $.ajax({
-            url: '/createProduct',
-            method: 'get',
-            data: {
-                tensp: ten,
-                giatien: gia,
-                phanloai: loai,
-                thoigianbd: tgbd,
-                thoigiandau: tgdau,
-                chitiet: mota,
-                hinhanh: img
-            },
-            success(data) {
-                alert(data)
-            },
-            error(err) {
-                $('.thongbao').status(404)
-            },
-        })
+        taoSPMoi()
     })
 
     var demsphot_ad = 0
