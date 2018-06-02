@@ -68,7 +68,7 @@ function thoiGianGiam(data, loaiid){
 
             thoigiantd = gio + ':' + phut + ':' + giay
             $(tagId).text(thoigiantd)
-            console.log($(tagId).text());
+            //console.log($(tagId).text());
             capNhatThoigianDG(data[i].masp, $(tagId).text())
            
             if($(tagId).text() == "00:00:00")
@@ -78,47 +78,46 @@ function thoiGianGiam(data, loaiid){
     
 }
 
-// setInterval cho thời gian thay đổi ở các trang chi tiết
-function thoiGianGiamChiTiet(masp, loaiid){
+// setInterval cho thời gian thay đổi ở các trang chi tiết, 
+//giống code bên trên nhưng không cần chạy hàm cập nhật lại thời gian sau 1s vì ở trên đã cập nhật rồi
+function thoiGianGiamChiTiet(data, loaiid){
     setInterval(function() {
-        var tagId = "#" + loaiid + masp
-        var arr = []
-        arr = $(tagId).text().split(":"); // 00:03:40
-        var gio = parseInt(arr[0])
-        var phut = parseInt(arr[1])
-        var giay = parseInt(arr[2])
+        for(var i=0; i< data.length; i++){
+            var tagId = "#" + loaiid + data[i].masp
+            var arr = []
+            arr = $(tagId).text().split(":"); // 00:03:40
+            var gio = parseInt(arr[0])
+            var phut = parseInt(arr[1])
+            var giay = parseInt(arr[2])
+            
+            var thoigiantd =""
+            if (gio > 0 && phut == 0 && giay == 0){
+                gio = gio - 1
+                phut = 59
+                giay = 60
+            }
+            else if (phut > 0 && giay == 0){
+                phut = phut - 1
+                giay = 60
+            }
+            else if (gio == 0 && phut == 0 && giay == 0){
+                giay = giay + 1
+            }
+                
+            giay = giay - 1
 
-        var thoigiantd =""
-        if (gio > 0 && phut == 0 && giay == 0){
-            gio = gio - 1
-            phut = 59
-            giay = 60
+            if(gio < 10 )
+                gio = '0' + gio
+            if(phut < 10 )
+                phut = '0' + phut
+            if(giay < 10 )
+                giay = '0' + giay
+
+            thoigiantd = gio + ':' + phut + ':' + giay
+            $(tagId).text(thoigiantd)
+           
         }
-        else if (phut > 0 && giay == 0){
-            phut = phut - 1
-            giay = 60
-        }
-        else if (gio == 0 && phut == 0 && giay == 0)
-            giay = giay + 1
-
-        giay = giay - 1
-
-        if(gio < 10 )
-            gio = '0' + gio
-        if(phut < 10 )
-            phut = '0' + phut
-        if(giay < 10 )
-            giay = '0' + giay
-
-        thoigiantd = gio + ':' + phut + ':' + giay
-        $(tagId).text(thoigiantd)
-        console.log("THoi gian luc nay: " + $(tagId).text());
-        //capNhatThoigianDG(masp, $(tagId).text())
-        
-        // if($(tagId).text() == "00:00:00")
-        //     capNhatTinhTrangPhienDG(data[i].maphiendg)
     }, 1000)
-    
 }
 
 function capNhatTinhTrangPhienDG(maphien) {
@@ -149,7 +148,7 @@ function loadSPHot(e,i) {
                 f = 'admin'
             }
              // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
-             $('.sp_hot').html("") 
+            $('.sp_hot').html("") 
             data.forEach(x => {
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
@@ -333,7 +332,15 @@ function loadAllSPDangDauGia() {
         url: '/load/sp_all',
         method: 'get',
         success(data) {
-            thoiGianGiam(data,"idchitietsp")    // load thời gian chạy setInterval các sản phẩm trong trang chi tiết
+            //$('#chitietsp').show()
+            data.forEach(x => {
+                $('.chitiet_sp').append(
+                    `<span style="color: red">
+                        <strong id="idchitietsp`+ x.masp + `">` + x.thoigiandau + `</strong>
+                    </span>`
+                )
+            })
+            thoiGianGiamChiTiet(data,"idchitietsp")    // load thời gian chạy setInterval các sản phẩm trong trang chi tiết
         },
         error(err) {
            console.log(err)
@@ -455,9 +462,8 @@ function xemChitiet(e, f) {
                                     </div>
                                     </div> `
                     )
-                    //thoiGianGiamChiTiet(x.masp, "idchitietsp")
-    
                 });
+                
             },
             error(err) {
                 console.log(err)
@@ -565,6 +571,9 @@ function dauGia(e) {
     })
 }
 
+
+
+//      ---------------- ADMIN ----------------
 function showHome_Admin() {
     $('#login').hide()
     $('#header_admin').show()
@@ -636,8 +645,7 @@ function nutAdmin() {
                 hinhanh: img
             },
             success(data) {
-                $('.thongbao').append(data)
-
+                alert(data)
             },
             error(err) {
                 $('.thongbao').status(404)
@@ -723,6 +731,7 @@ function login(e) {
                        console.log(err)
                     },
                 })
+                $('#idUserHeader').text(data.username)    
                 if (data.type == "user")
                     showHome_User(0)
                 else if(data.type == "admin")

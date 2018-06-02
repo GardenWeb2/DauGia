@@ -29,14 +29,6 @@ app.get('/setCookie/:matk', (req, res, next)=>{
     res.end("DONE")
 })
 
-app.get('/abc', (req, res, next)=>{
-    if(req.cookies['user_id'] != null)
-        res.write("Cookie is " + req.cookies['user_id'])
-    else
-        res.write("No cookie")
-    res.send()
-})
-
 app.get('/login', (req, res) => {
     var name = req.query.username
     var pass = req.query.password
@@ -62,10 +54,10 @@ app.get('/login', (req, res) => {
             }
             else{
                 if(result.rows[0].tenloai == "admin"){
-                    res.send({ status: 'true', user: result.rows[0].matk, type: "admin" });
+                    res.send({ status: 'true', user: result.rows[0].matk, type: "admin", username: result.rows[0].tentk });
                 }
                 else if(result.rows[0].tenloai == "user"){
-                    res.send({ status: 'true', user: result.rows[0].matk, type: "user" });
+                    res.send({ status: 'true', user: result.rows[0].matk, type: "user", username: result.rows[0].tentk });
                 }
             }
         });
@@ -538,7 +530,7 @@ app.get('/createProduct', (req, res)=>{
             var ttp = parseInt(tinhtrangphien)
             client.query(`insert into phiendaugia(masp,thoigianbd,thoigiandau,giathapnhat,giahientai,maphieudauthang,matinhtrang)
                             values(`+ masp + `,'`+ tgbd +`','` + tgdau + `',` + gia + `,` + gia + `,null,` + ttp + `)`)
-            res.send("Thành công")
+            res.send("Thêm sản phẩm thành công")
         });
      })
 })
