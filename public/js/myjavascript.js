@@ -515,8 +515,9 @@ function loadSPDaDG() {
         method: 'get',
         success(data) {
             var i = 1
+            $('.tbody1').html("")
             data.forEach(x => {
-                $('table').append(
+                $('.table').append(
                     `<tr>` +
                         `<td>`+ `<p>` + i + `</p>` + `</td>` +
                         `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
@@ -529,9 +530,50 @@ function loadSPDaDG() {
         },
         error(err){
             $('.sp_DaDG').status(404)
-        },
+        }
     })
 }
+
+function loadSPKhongDG(){
+    $.ajax({
+        url: '/load/sp_khongdaugia',
+        method: 'get',
+        success(data){
+            var i = 1
+            $('.tbody2').html("")
+            data.forEach(x => {
+                $('.table').append(
+                    `<tr>` +
+                        `<td>`+ `<p>` + i + `</p>` + `</td>` +
+                        `<td>`+ x.masp + `</td>`+
+                        `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
+                        `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
+                        `<td><button class="btn-default" onclick="isDelete(e)" value="` + x.masp + `"> Delete </button></td>`
+                    + `</tr>`
+                )
+                i++
+            })      
+        },
+        error(err){
+            $('.sp_KhongDG').status(404)
+        }
+    })
+}
+
+/*function isDelete(e){
+    var id = $(e).val()
+    $.ajax({
+        url: '/delete/' + id,
+        method: 'delete',
+        success: function(response){
+            loadSPKhongDG()
+        },
+        error(err){
+            console.log(err)
+            alert("Xóa không thành công!")
+        }
+    })
+}*/
 
 function nutAdmin() {
     $('#btnthemsanpham').click(function () {
@@ -626,6 +668,8 @@ function nutAdmin() {
         anRandom()
         $('#header_admin').show()
         $('#spDaDG').show();
+        $('.sp_DaDG').show()
+        $('.sp_KhongDG').hide()
         loadSPDaDG()
     })
 
@@ -634,6 +678,9 @@ function nutAdmin() {
         anRandom()
         $('#header_admin').show()
         $('#spKhongDG').show();
+        $('.sp_KhongDG').show()
+        $('.sp_DaDG').hide()
+        loadSPKhongDG()
     })
 }
 
