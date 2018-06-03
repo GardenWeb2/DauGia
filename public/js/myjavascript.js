@@ -986,6 +986,13 @@ function nutAdmin() {
         $('.sp_DaDG').hide()
         loadSPKhongDG()
     })
+
+    $('#btndangxuatadmin').click(function(){
+        anALL()
+        anRandom()
+        $('#login').show()
+        location.reload()
+    })
 }
 
 function login(e) {
