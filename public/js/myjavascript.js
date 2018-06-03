@@ -11,6 +11,7 @@ function anALL() {
     $('#chitietsp').hide()
     $('#CacSPDangDauGia').hide()
     $('#idGioHang').hide()
+    $('.luachon').hide()
 
     //an ben admin
     $('.sp_DaDG').html("")
@@ -66,10 +67,10 @@ function thoiGianGiam(data, loaiid, solan){
             // nếu sp còn thời gian thì cập nhật thời gian thay đổi xuống database
             // ngược lại nếu hết thời gian thì sẽ update tình trạng phiên đấu giá 
             // hoặc có thể update thêm người đấu giá thắng sp + thời gian = '00:00:00'
-            if(thoigiantd != "00:00:00"){ //$(tagId).text() != "00:00:01" &&
+            if(thoigiantd != "00:00:01" && thoigiantd != "00:00:00"){ //
                 capNhatThoigianDG(data.masp, thoigiantd)
             }
-            else{    // khi hết thời gian thì cập nhật tình trạng, thời gian
+            else if(thoigiantd == "00:00:01"){    // khi hết thời gian thì cập nhật tình trạng, thời gian
                 capNhatTinhTrangPhienDG(data.maphiendg)
             }
         }
@@ -161,8 +162,6 @@ function loadSPHot(e,i) {
             $('.sp_hot').html("") 
             
             for(var i=0; i< data.length; i++){
-                var tagId = "#idhot" + data[i].masp
-                $(tagId).text("")
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     data[i].hinhanh +
@@ -422,6 +421,13 @@ $(document).ready(() => {
         })
     })
 
+    $('#btndangxuat').click(function () {
+        anALL()
+        anRandom()
+        $('#header_user').hide()
+        $('#login').show()
+    })
+    
     
 
     nutAdmin()      // các nút trên header_admin bên trang admin
@@ -434,32 +440,34 @@ function loadDauGiaCuaToi() {
         success(data) {
             var i = 1
             $('.table').html("")
-            $('table').append(
-                `<thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Hình ảnh</th>
-                        <th>Giá đấu của bạn </th>
-                        <th>Giá đấu hiện tại </th>
-                        <th>Tình trạng đấu </th>
-                    </tr>
-                </thead>`
-            )
-            data.forEach(x => {
+            if(data.status == "true"){
                 $('table').append(
-                    `<tr>` +
-                        `<td>`+ `<p>` + i + `</p>` + `</td>` +
-                        `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
-                        `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
-                        `<td>`+ x.giadau + ` K </td>` +
-                        `<td>`+ x.giahientai + ` K </td>` +
-                        `<td>`+ x.tentinhtrangphieudg + `</td>` +
-                     `</tr>`
+                    `<thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Hình ảnh</th>
+                            <th>Giá đấu của bạn </th>
+                            <th>Giá đấu hiện tại </th>
+                            <th>Tình trạng đấu </th>
+                        </tr>
+                    </thead>`
                 )
-                i++
-            })
-          
+                data.detail.forEach(x => {
+                    $('table').append(
+                        `<tr>` +
+                            `<td>`+ `<p>` + i + `</p>` + `</td>` +
+                            `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
+                            `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
+                            `<td>`+ x.giadau + ` K </td>` +
+                            `<td>`+ x.giahientai + ` K </td>` +
+                            `<td>`+ x.tentinhtrangphieudg + `</td>` +
+                         `</tr>`
+                    )
+                    i++
+                })
+            }
+            
         },
         error(err){
             $('.lichSuDG').status(404)
@@ -475,32 +483,36 @@ function loadGioHang() {
         success(data) {
             var tongtien = 0
             $('.table').html("")
-            $('table').append(
-                `<thead>
-                    <tr>
-                        <th class="col-sm-2">Sản phẩm</th>
-                        <th class="col-sm-2">Số Lượng</th>
-                        <th class="col-sm-2">Đơn Giá</th>
-                    </tr>
-                </thead>`
-            )
-            data.forEach(x => { 
-                tongtien += parseInt(x.giadau)
+            if(data.status == "true"){
                 $('table').append(
-                    `<tr>` +
-                        `<td class="col-sm-2">` + x.info  + `<td>` +
-                        `<td class="col-sm-2">   1 </td>` +
-                        `<td class="col-sm-2">`+ x.giadau + `000 </td>` +
-                     `</tr>`
+                    `<thead>
+                        <tr>
+                            <th class="col-sm-2">Sản phẩm</th>
+                            <th class="col-sm-2">Số Lượng</th>
+                            <th class="col-sm-2">Đơn Giá</th>
+                        </tr>
+                    </thead>`
                 )
-            })
-            $('.tongtien').append(
-                `<tr>
-                    <td>
-                        <h4>Thành tiền: ` + tongtien.toString() +`000 VNĐ </h4>
-                    </td>
-                </tr>`
-            )
+                data.detail.forEach(x => { 
+                    tongtien += parseInt(x.giadau)
+                    $('table').append(
+                        `<tr>` +
+                            `<td class="col-sm-2">` + x.info  + `</td>
+                            <td class="col-sm-2">   1 </td>
+                            <td class="col-sm-2">`+ x.giadau + `000 </td>
+                         </tr>`
+                    )
+                })
+                $('table').append(
+                    `<tfoot> <tr>
+                        <td>
+                            <h4>Thành tiền:         ` + tongtien.toString() +`000 VNĐ </h4>
+                        </td>
+                        </tr>  </tfoot>`
+                )
+                $('.luachon').show()
+            }
+            
         },
         error(err){
             console.log(err)
@@ -509,7 +521,17 @@ function loadGioHang() {
 }
 
 function thanhToan() {
-    //
+    $.ajax({
+        url: '/thanhToan',
+        method: 'get',
+        success(data) {
+            $('#idGioHang').html("")
+            alert(data)
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
 }
 
 function xemChitiet(e, f) {
@@ -526,6 +548,7 @@ function xemChitiet(e, f) {
                 $('.chitiet_sp').html("")
                 data.forEach(x => {
                     $('#ten_ctsp').text(x.info)
+                    var giadau_toithieu = parseInt(x.giahientai) + 1
                     $('.chitiet_sp').append(
                         `<div class="col-sm-3 col-md-3 hinh">
                                 <div class="thumbnail" style="height:350px">
@@ -555,7 +578,7 @@ function xemChitiet(e, f) {
                                                 <span class="glyphicon glyphicon-minus"></span>
                                                 </button>
                                                 </span>
-                                                <input value="`+ x.giahientai + `" id="giadau" class="form-control input-number" type="text" style="width: 50px">
+                                                <input value="`+ giadau_toithieu + `" id="giadau" class="form-control input-number" type="text" style="width: 50px">
                                                 <button onclick="giaTienThayDoi(this)" value="cong" class="btn btn-success btn-number" data-type="plus" data-field="quant">
                                                     <span class="glyphicon glyphicon-plus"></span>
                                                 </button>
@@ -713,7 +736,7 @@ function taoSPMoi() {
     var tgdau = $('#thoigiandaugia').val();
     var mota = $('#FullDes').val();
     var img = $('#idImage').val();
-
+    loadLaiBangTaoSP()
     $.ajax({
         url: '/createProduct',
         method: 'get',
@@ -727,12 +750,22 @@ function taoSPMoi() {
             hinhanh: img
         },
         success(data) {
+            
             alert(data)
         },
         error(err) {
             $('.thongbao').status(404)
         },
     })
+}
+
+function loadLaiBangTaoSP() {
+    $('#ProName').val("");
+    $('#Price').val("");
+    $('#thoigianbd').val("");
+    $('#thoigiandaugia').val("");
+    $('#FullDes').val("");
+    $('#idImage').val("");
 }
 
 function loadSPDaDG() {
@@ -781,40 +814,38 @@ function nutAdmin() {
     var demspcnt_ad = 0
     var demsptt_ad = 0
     var demspdgd_ad = 0
-    $('#btndangdaugia').click(function () {
-        $('#btnsphot2').click(function () {
-            $('#insertSP').hide()
-            $('#hot').show()
-            loadSPHot('admin', demsphot_ad)
-            demsphot_ad ++
-        })
-
-        $('#btnspshtg').click(function () {
-            $('#insertSP').hide()
-            $('#hetthoigian').show()
-            loadSPHetThoiGianDau('admin', demsphtg_ad)
-            demsphtg_ad ++
-        })
-
-        $('#btncongnghe2').click(function () {
-            $('#insertSP').hide()
-            loadSPCongNghe('admin', demspcnt_ad)
-            demspcnt_ad ++
-        })
-
-        $('#btndogiadung2').click(function () {
-            $('#insertSP').hide()
-            loadSPDoGiaDung('admin', demspdgd_ad)
-            demspdgd_ad ++
-        })
-
-        $('#btnthoitrang2').click(function () {
-            $('#insertSP').hide()
-            loadSPThoiTrang('admin', demsptt_ad)
-            demsptt_ad ++
-        })
+    $('#btnsphot2').click(function () {
+        $('#insertSP').hide()
+        $('#hot').show()
+        loadSPHot('admin', demsphot_ad)
+        demsphot_ad++
     })
 
+    $('#btnspshtg').click(function () {
+        $('#insertSP').hide()
+        $('#hetthoigian').show()
+        loadSPHetThoiGianDau('admin', demsphtg_ad)
+        demsphtg_ad++
+    })
+
+    $('#btncongnghe2').click(function () {
+        $('#insertSP').hide()
+        loadSPCongNghe('admin', demspcnt_ad)
+        demspcnt_ad++
+    })
+
+    $('#btndogiadung2').click(function () {
+        $('#insertSP').hide()
+        loadSPDoGiaDung('admin', demspdgd_ad)
+        demspdgd_ad++
+    })
+
+    $('#btnthoitrang2').click(function () {
+        $('#insertSP').hide()
+        loadSPThoiTrang('admin', demsptt_ad)
+        demsptt_ad++
+    })
+    
     $('#btndadaugia').click(function () {
         anALL()
         anRandom()

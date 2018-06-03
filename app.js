@@ -17,8 +17,9 @@ app.use(cookieParser())
 
 app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-    res.sendfile('welcome.html')
+
+app.get('/index', (req, res) => {
+    res.sendfile('index.html')
 })
 
 
@@ -62,10 +63,6 @@ app.get('/login', (req, res) => {
             }
         });
      });
-})
-
-app.get('/index', (req, res) => {
-    res.sendfile('index.html')
 })
 
 //Load Tất cả sản phẩm để chạy hàm setInterval() trong trang chi tiết
@@ -216,15 +213,7 @@ app.get('/load/sp_dogiadung', (req, res)=>{
      });
 })
 
-app.get('/shopping', (req, res) => {
 
-    res.sendfile('shopping-cart.html')
-})
-
-// app.get('/daugiacuatoi', (req, res) => {
-
-//     res.sendfile('daugiacuatoi.html')
-// })
 
 
 // Update Thời gian đấu giá mỗi 1s
@@ -338,7 +327,15 @@ app.get('/load/daugiacuatoi', (req, res)=>{
                 console.log(err);
                 res.status(400).send(err)
             }
-            res.json(result.rows)
+            
+            if(result.rowCount == 0){
+                res.send({ status: 'false'});
+                res.end()
+            }
+            else{
+                // QUÁ HAY: có thể gửi dạng json kèm theo, đưa nó vào 1 biến, để bên client có thể lấy qua
+                res.send({ status: 'true', detail: result.rows });
+            }
         });
      });
 })
@@ -355,8 +352,8 @@ app.get('/load/gioHang', (req, res)=>{
         client.query(`SELECT s.*, p.*, ph.*, tt.*
                     FROM sanpham s, phiendaugia p, tinhtrangphiendg t, phieudaugia ph, tinhtrangphieudg tt
                     WHERE s.masp = p.masp and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'da dau gia'
-                          and p.maphiendg = ph.maphiendg and ph.matinhtrang = tt.matinhtrangphieudg 
-                          and ph.matk = ` +  matk + ``
+                          and p.maphiendg = ph.maphiendg and ph.matinhtrang = tt.matinhtrangphieudg and  p.thanhtoan ='false'
+                          and tt.tentinhtrangphieudg = 'dau gia thanh cong' and ph.matk = ` +  matk + ``
         ,function(err,result) {
            //call `done()` to release the client back to the pool
             done(); 
@@ -365,9 +362,59 @@ app.get('/load/gioHang', (req, res)=>{
                 console.log(err);
                 res.status(400).send(err)
             }
-            res.json(result.rows)
+            
+            if(result.rowCount == 0){
+                res.send({ status: 'false'});
+                res.end()
+            }
+            else{
+                // QUÁ HAY: có thể gửi dạng json kèm theo, đưa nó vào 1 biến, để bên client có thể lấy qua
+                res.send({ status: 'true', detail: result.rows });
+            }
         });
      });
+})
+
+// Khi ng dùng nhấn nút thanh toán trong giỏ hàng
+app.get('/thanhToan', (req, res) => {
+    var matk =  parseInt(req.cookies['user_id'])
+    pool.connect(function(err,client,done) {
+        if(err){
+            console.log("not able to get connection "+ err);
+            res.status(400).send(err);
+        } 
+
+        client.query(`SELECT ph.*
+                    FROM phieudaugia ph, tinhtrangphieudg t, phiendaugia p
+                    WHERE ph.matinhtrang = t.matinhtrangphieudg and t.tentinhtrangphieudg = 'dau gia thanh cong' 
+                    and p.maphieudauthang = ph.maphieudg and ph.matk = ` + matk 
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log("Loi:   " +  err);
+                res.status(400).send(err)
+            }
+            for (var i = 0; i < result.rowCount; i++) {
+                console.log("MA PHIEU Da Dau thang: " + result.rows[i].maphieudg)
+                //xét xem ma phieu nào đã đấu thắng trong tất cả các mã phiếu
+                client.query(`update phiendaugia
+                    set thanhtoan ='true'
+                    where maphieudauthang = `+ result.rows[i].maphieudg
+                ,function(err,result1) {
+                //call `done()` to release the client back to the pool
+                    done(); 
+                    if(err){
+                        res.end();
+                        console.log("Loi:   " +  err);
+                        res.status(400).send(err)
+                    }
+                })
+            }
+            res.send("Thanh toán thành công")
+        })
+     })
 })
 
 // Chi tiết sản phẩm
@@ -575,8 +622,8 @@ app.get('/createProduct', (req, res)=>{
             }
             var masp = parseInt(result.rows[0].masp)
             var ttp = parseInt(tinhtrangphien)
-            client.query(`insert into phiendaugia(masp,thoigianbd,thoigiandau,giathapnhat,giahientai,maphieudauthang,matinhtrang)
-                            values(`+ masp + `,'`+ tgbd +`','` + tgdau + `',` + gia + `,` + gia + `,null,` + ttp + `)`)
+            client.query(`insert into phiendaugia(masp,thoigianbd,thoigiandau,giathapnhat,giahientai,maphieudauthang,matinhtrang,thanhtoan)
+                            values(`+ masp + `,'`+ tgbd +`','` + tgdau + `',` + gia + `,` + gia + `,null,` + ttp + `, false)`)
             res.send("Thêm sản phẩm thành công")
         });
      })

@@ -111,7 +111,8 @@ CREATE TABLE public.phiendaugia (
     giathapnhat integer,
     giahientai integer,
     maphieudauthang integer,
-    matinhtrang integer
+    matinhtrang integer,
+    thanhtoan boolean
 );
 
 
@@ -220,7 +221,9 @@ CREATE TABLE public.taikhoan (
     matk bigint NOT NULL,
     tentk character varying(30),
     matkhau character varying(30),
-    loaitk integer
+    loaitk integer,
+    sdt character varying(20),
+    diachi text
 );
 
 
@@ -435,29 +438,32 @@ COPY public.loaitk (maloai, tenloai) FROM stdin;
 -- Data for Name: phiendaugia; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.phiendaugia (maphiendg, masp, thoigianbd, thoigiandau, giathapnhat, giahientai, maphieudauthang, matinhtrang) FROM stdin;
-10	21	2018-06-10 04:30:00	00:05:20	11	11	\N	2
-22	19	2018-05-12 10:00:20	00:00:00	1	1	\N	4
-13	11	2018-05-11 11:30:00	00:00:00	1	1	\N	4
-15	13	2018-06-01 05:30:00	00:00:00	5	5	\N	4
-14	12	2018-12-23 00:30:10	01:05:10	2	2	\N	2
-21	18	2018-06-12 10:00:20	00:44:12	1	1	\N	2
-20	16	2018-06-11 09:10:20	00:53:12	15	15	\N	2
-1	1	2018-06-10 08:00:00	01:05:20	1	1	\N	2
-8	8	2018-05-10 09:00:00	00:00:00	5	55	4	3
-19	14	2018-05-11 09:20:00	00:48:57	5	5	\N	1
-23	32	2018-06-01 08:30:00	00:46:45	1	1	\N	1
-5	5	2018-05-11 09:00:00	00:57:53	2	62	\N	1
-18	31	2018-05-31 00:00:00	00:40:48	10	10	\N	1
-7	7	2018-05-11 09:00:00	00:00:00	4	4	\N	4
-12	10	2018-05-10 09:30:00	00:14:43	10	10	\N	1
-6	6	2018-05-11 09:00:00	00:25:30	1	21	\N	1
-17	29	2018-05-31 05:20:10	00:08:26	12	12	\N	1
-11	9	2018-06-10 09:30:00	00:53:41	5	5	\N	1
-2	2	2018-05-10 09:00:00	00:15:22	3	60	\N	1
-3	3	2018-05-11 09:00:00	00:28:33	5	55	\N	1
-4	4	2018-05-11 09:00:00	00:32:40	45	45	\N	1
-9	20	2018-05-10 09:00:00	00:27:02	5	5	\N	1
+COPY public.phiendaugia (maphiendg, masp, thoigianbd, thoigiandau, giathapnhat, giahientai, maphieudauthang, matinhtrang, thanhtoan) FROM stdin;
+8	8	2018-05-10 09:00:00	00:00:00	5	55	4	3	t
+4	4	2018-05-11 09:00:00	01:44:37	45	45	\N	1	f
+6	6	2018-05-11 09:00:00	00:58:16	1	31	\N	1	f
+9	20	2018-05-10 09:00:00	00:21:29	5	25	\N	1	f
+5	5	2018-05-11 09:00:00	00:43:47	2	82	\N	1	f
+2	2	2018-05-10 09:00:00	00:51:28	3	20	\N	1	f
+25	34	2018-06-03 04:15:00	01:04:40	10	10	\N	1	f
+14	12	2018-12-23 00:30:10	01:04:30	2	2	\N	1	f
+20	16	2018-06-11 09:10:20	01:52:32	15	15	\N	1	f
+7	7	2018-05-11 09:00:00	01:32:58	4	4	\N	1	f
+12	10	2018-05-10 09:30:00	05:07:02	10	10	\N	1	f
+18	31	2018-05-31 00:00:00	02:03:01	10	10	\N	1	f
+13	11	2018-05-11 11:30:00	02:00:00	1	1	\N	2	f
+10	21	2018-06-10 04:30:00	02:26:53	11	11	\N	1	f
+26	35	2018-06-20 00:20:30	00:52:20	1	1	\N	2	f
+1	1	2018-06-10 08:00:00	01:05:20	1	1	\N	2	f
+22	19	2018-05-12 10:00:20	00:00:00	1	1	\N	4	f
+21	18	2018-06-12 10:00:20	01:44:12	1	1	\N	2	f
+15	13	2018-06-01 05:30:00	01:58:40	5	5	\N	1	f
+3	3	2018-05-11 09:00:00	00:00:00	5	55	3	3	t
+23	32	2018-06-01 08:30:00	00:00:26	1	1	\N	1	f
+24	33	2018-06-02 00:50:00	00:00:00	10	20	19	3	f
+11	9	2018-06-10 09:30:00	00:17:35	5	5	\N	1	f
+17	29	2018-05-31 05:20:10	03:14:28	12	12	\N	1	f
+19	14	2018-05-11 09:20:00	00:00:00	5	5	\N	4	f
 \.
 
 
@@ -467,14 +473,17 @@ COPY public.phiendaugia (maphiendg, masp, thoigianbd, thoigiandau, giathapnhat, 
 
 COPY public.phieudaugia (maphieudg, maphiendg, matk, giadau, matinhtrang) FROM stdin;
 3	3	1	55	1
-6	5	1	12	2
-15	5	2	62	1
-1	2	2	60	1
-2	2	1	50	2
+2	2	1	20	1
+1	2	2	10	2
 4	8	1	55	1
 5	8	2	45	2
-13	6	2	21	1
-7	6	1	11	2
+18	9	1	25	1
+17	9	2	15	2
+7	6	1	31	1
+13	6	2	21	2
+15	5	2	82	1
+6	5	1	72	2
+19	24	4	20	1
 \.
 
 
@@ -504,7 +513,10 @@ COPY public.sanpham (masp, loaisp, hinhanh, info, isnew, isdelete, mota) FROM st
 11	3	017.jpg	Thùng rác kim loại	t	f	gnfndl\nada
 14	1	011.jpg	Loa bluetooth	t	f	d
 10	2	015.jpg	Nón Nam	t	f	sa\njh\njhg
-9	3	017.jpg	Thùng rác văn phòng	t	f	s\nlk
+9	3	017.jpg	Thùng rác VP	t	f	s\nlk
+33	2	45-575-01_250.jpg	Ba Lô Nam	t	f	Ba lô NEAT với thiết kế 1 ngăn kéo chính, ngăn phụ bên hồng túi kèm dây đai có thể điều chỉnh thuận tiện để đựng các vật dụng cần thiết của bạn .Đấu giá ngay cho sản phẩm này!\n\nBalo NEAT\n\n- Thiết kế 1 ngăn kéo chính kèm ngăn phụ bên hông túi\n- Dây đai điều chỉnh tiện lợi\n- Được làm từ vật liệu chất lượng cao, nhẹ và thoáng khí\n- Kích thước: 35 x 14 x 44 cm
+34	1	020.jpg	Máy quay phim	t	f	Máy quay phim chất lượng cao\nSắc nét
+35	2	002.jpg	Xe trượt	t	f	Tiện dụng\nĐẹp
 \.
 
 
@@ -512,10 +524,11 @@ COPY public.sanpham (masp, loaisp, hinhanh, info, isnew, isdelete, mota) FROM st
 -- Data for Name: taikhoan; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.taikhoan (matk, tentk, matkhau, loaitk) FROM stdin;
-2	b	b	2
-1	a	a	2
-3	ad	ad	1
+COPY public.taikhoan (matk, tentk, matkhau, loaitk, sdt, diachi) FROM stdin;
+4	c	c	2	0169458123	12 Hùng Vương, Q.5, tpHCM
+2	b	b	2	0169452018	56 Hàng Xanh, Hà Nội
+1	a	a	2	090356812	105 Nguyễn Văn Cừ, Q.1, tpHCM
+3	ad	ad	1	0919352148	104 Nguyễn Duy Dương, Q.5 
 \.
 
 
@@ -568,28 +581,28 @@ SELECT pg_catalog.setval('public.loaitk_maloai_seq', 2, true);
 -- Name: phiendaugia_maphiendg_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.phiendaugia_maphiendg_seq', 23, true);
+SELECT pg_catalog.setval('public.phiendaugia_maphiendg_seq', 26, true);
 
 
 --
 -- Name: phieudaugia_maphieudg_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.phieudaugia_maphieudg_seq', 16, true);
+SELECT pg_catalog.setval('public.phieudaugia_maphieudg_seq', 19, true);
 
 
 --
 -- Name: sanpham_masp_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.sanpham_masp_seq', 32, true);
+SELECT pg_catalog.setval('public.sanpham_masp_seq', 35, true);
 
 
 --
 -- Name: taikhoan_matk_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.taikhoan_matk_seq', 3, true);
+SELECT pg_catalog.setval('public.taikhoan_matk_seq', 4, true);
 
 
 --
