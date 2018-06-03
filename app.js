@@ -245,7 +245,7 @@ app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
             if(err){
                 res.end();
                 console.log("Loi:   " +  err);
-                res.status(400).send(err)
+                res.status(404).send(err)
             }
             //res.json(result.rows)
             res.send("true")
@@ -509,7 +509,7 @@ app.get('/load/sp_khongdaugia', (req, res)=>{
         } 
         client.query(`SELECT s.*, p.*
                 FROM sanpham s, phiendaugia p, tinhtrangphiendg t
-                WHERE s.masp = p.masp and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'khong co dau gia'`
+                WHERE s.masp = p.masp and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'khong co dau gia' and s.Isdelete = 'false'`
         ,function(err,result) {
            //call `done()` to release the client back to the pool
             done(); 
@@ -523,6 +523,28 @@ app.get('/load/sp_khongdaugia', (req, res)=>{
      });
 })
 
+app.delete('/delete/:a', (req, res) => {
+    var id = parseInt(req.params['a'])
+    pool.connect(function(err, client, done){
+        if(err){
+            console.log("not able to get connect" + err)
+            res.status(404).send(err)
+        }
+        client.query(`update sanpham
+                    set Isdelete = 'True'
+                    where masp = ` + id 
+        ,function(err, result){
+            done()
+            if(err){
+                res.end()
+                console.log("Loi: " + err)
+                res.status(404).send(err)
+            }
+
+            res.send("Xóa thành công")
+        })
+    })
+})
 
 app.get('/createProduct', (req, res)=>{
     //console.log(req.query)

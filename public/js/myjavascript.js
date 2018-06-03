@@ -774,7 +774,7 @@ function loadSPKhongDG(){
                         `<td>`+ x.masp + `</td>`+
                         `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
                         `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
-                        `<td><button class="btn-default" onclick="isDelete(e)" value="` + x.masp + `"> Delete </button></td>`
+                        `<td><button class="btn-default" onclick="isDelete(this)" value="` + x.masp + `"> Delete </button></td>`
                     + `</tr>`
                 )
                 i++
@@ -786,8 +786,7 @@ function loadSPKhongDG(){
     })
 }
 
-<<<<<<< HEAD
-/*function isDelete(e){
+function isDelete(e){
     var id = $(e).val()
     $.ajax({
         url: '/delete/' + id,
@@ -800,9 +799,7 @@ function loadSPKhongDG(){
             alert("Xóa không thành công!")
         }
     })
-}*/
-=======
->>>>>>> 63e75c4d60679c2a0d6572b63df602aa8939e71c
+}
 
 function nutAdmin() {
     $('#btnthemsanpham').click(function () {
@@ -917,7 +914,6 @@ function login(e) {
         },
     })
 }
-
 
 function dangki(e) {
     $('#login').hide()
