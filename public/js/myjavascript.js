@@ -440,14 +440,13 @@ function loadAllSPDangDauGia() {
 }
 
 
-
 function showHome_User(i) {
     anALL()
     $('#login').hide()
     $('#header_user').show()
     $('#hot').show()
     $('#hetthoigian').show()
-
+    
     loadSPHot('user',i)
     loadSPHetThoiGianDau('user',i)
 }
@@ -457,6 +456,7 @@ $(document).ready(() => {
     anRandom()
     anALL()
     $('#header_user').hide()
+    
 
     var demHome = 1
     $('#btnhome').click(function () {
@@ -503,11 +503,9 @@ $(document).ready(() => {
         })
     })
 
+    
     $('#btndangxuat').click(function () {
-        anALL()
-        anRandom()
-        $('#header_user').hide()
-        $('#login').show()
+        location.reload();
     })
     
     
@@ -1002,7 +1000,7 @@ function login(e) {
         },
         success(data) {
             if(data.status != "false"){
-                loadAllSPDangDauGia()   // load sẵn thời gian chạy tự động trong trang chi tiết của tất cả các sản phẩm
+                loadAllSPDangDauGia()   
                 $.ajax({
                     url: '/setCookie/' + data.user,
                     method: 'get',
