@@ -5,10 +5,12 @@ function anRandom() {
 
 function anALL() {
      // an ben user
-     $('#congnghe').hide()
-     $('#thoitrang').hide()
-     $('#dogiadung').hide()
-     $('#chitietsp').hide()
+    $('#congnghe').hide()
+    $('#thoitrang').hide()
+    $('#dogiadung').hide()
+    $('#chitietsp').hide()
+    $('#CacSPDangDauGia').hide()
+    $('#idGioHang').hide()
 
     //an ben admin
     $('.sp_DaDG').html("")
@@ -21,19 +23,62 @@ function anALL() {
 }
 
 
-// update xuống postgre sau mỗi 1s
-function capNhatThoigianDG(masp, thoigian) {
-    $.ajax({
-        url: '/capNhatThoiGianDau/' + masp + '/' + thoigian,
-        method: 'get',
-        success(data) {
-            console.log(data)
+// setInterval cho thời gian thay đổi ở các trang bên ngoài
+function thoiGianGiam(data, loaiid, solan){
+    setInterval(function() {
+        var tagId = "#" + loaiid + data.masp + "_" + solan
+        var arr = []
+        arr = $(tagId).text().split(":"); // 00:03:40
+        // if(arr[0] == ""){      // nghĩa là khi ng dùng nhấn gọi lại 1 button nào đó trên header
+        //     console.log("Thẻ id này đã bị xóa, khi nhấn lại 1 button ")
+        // }
+        if(arr[0] != ""){
+            var gio = parseInt(arr[0])
+            var phut = parseInt(arr[1])
+            var giay = parseInt(arr[2])
+            
+            var thoigiantd = ""
+            if (gio > 0 && phut == 0 && giay == 0){
+                gio = gio - 1
+                phut = 59
+                giay = 60
+            }
+            else if (phut > 0 && giay == 0){
+                phut = phut - 1
+                giay = 60
+            }
+            else if (gio == 0 && phut == 0 && giay == 0){
+                giay = giay + 1
+            }
+                
+            giay = giay - 1
+
+            if(gio < 10 )
+                gio = '0' + gio
+            if(phut < 10 )
+                phut = '0' + phut
+            if(giay < 10 )
+                giay = '0' + giay
+
+            thoigiantd = gio + ':' + phut + ':' + giay
+            $(tagId).text(thoigiantd)
+            
+            // nếu sp còn thời gian thì cập nhật thời gian thay đổi xuống database
+            // ngược lại nếu hết thời gian thì sẽ update tình trạng phiên đấu giá 
+            // hoặc có thể update thêm người đấu giá thắng sp + thời gian = '00:00:00'
+            if(thoigiantd != "00:00:00"){ //$(tagId).text() != "00:00:01" &&
+                capNhatThoigianDG(data.masp, thoigiantd)
+            }
+            else{    // khi hết thời gian thì cập nhật tình trạng, thời gian
+                capNhatTinhTrangPhienDG(data.maphiendg)
+            }
         }
-    })
+    }, 1000)
 }
 
-// setInterval cho thời gian thay đổi ở các trang bên ngoài
-function thoiGianGiam(data, loaiid){
+// setInterval cho thời gian thay đổi ở các trang chi tiết, 
+//giống code bên trên nhưng không cần chạy hàm cập nhật lại thời gian sau 1s vì ở trên đã cập nhật rồi
+function thoiGianGiamChiTiet(data, loaiid){
     setInterval(function() {
         for(var i=0; i< data.length; i++){
             var tagId = "#" + loaiid + data[i].masp
@@ -53,8 +98,10 @@ function thoiGianGiam(data, loaiid){
                 phut = phut - 1
                 giay = 60
             }
-            else if (gio == 0 && phut == 0 && giay == 0)
+            else if (gio == 0 && phut == 0 && giay == 0){
                 giay = giay + 1
+            }
+                
             giay = giay - 1
 
             if(gio < 10 )
@@ -66,18 +113,40 @@ function thoiGianGiam(data, loaiid){
 
             thoigiantd = gio + ':' + phut + ':' + giay
             $(tagId).text(thoigiantd)
-            console.log($(tagId).text());
-            capNhatThoigianDG(data[i].masp, $(tagId).text())
-           
-            if($(tagId).text() == "00:00:00")
-                capNhatTinhTrangPhienDG(data[i].maphiendg)
         }
     }, 1000)
-    
 }
+
+// update xuống postgre sau mỗi 1s
+function capNhatThoigianDG(masp, thoigian) {
+    $.ajax({
+        url: '/capNhatThoiGianDau/' + masp + '/' + thoigian,
+        method: 'get',
+        success(data) {
+            //console.log(data)
+        }
+    })
+}
+
+
+function capNhatTinhTrangPhienDG(maphien) {
+    
+    $.ajax({
+        url: '/capNhatTinhTrangPhien/' + maphien,
+        method: 'get',
+        success(data) {
+            console.log(data)
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
+}
+
 
 function loadSPHot(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_hot',
         method: 'get',
@@ -88,25 +157,27 @@ function loadSPHot(e,i) {
                 $('#header_admin').show()
                 f = 'admin'
             }
-             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
-             $('.sp_hot').html("") 
-            data.forEach(x => {
+             // Không được gộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+            $('.sp_hot').html("") 
+            
+            for(var i=0; i< data.length; i++){
+                var tagId = "#idhot" + data[i].masp
+                $(tagId).text("")
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong id="idhot` + x.masp + `" >` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idhot` + data[i].masp +`_`+ solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
+                    data[i].giahientai + "K" +
                     `</span></br>
                         <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `" > Đấu Giá Ngay</button></div></div></div>`
+                        data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idhot")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idhot", solan)
             }
+            
         },
         error(err) {
             $('.sp_hot').status(404)
@@ -116,6 +187,7 @@ function loadSPHot(e,i) {
 
 function loadSPHetThoiGianDau(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_hettg',
         method: 'get',
@@ -126,23 +198,22 @@ function loadSPHetThoiGianDau(e,i) {
                 $('#header_admin').show()
                 f = 'admin'
             }
-             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+             // Không được gộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
              $('.sp_hettg').html("") 
-            data.forEach(x => {
+            for(var i=0; i< data.length; i++){
                 $('.sp_hettg').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` + x.info +
-                    `</h3>Thời gian:      <strong id="idhettg` + x.masp + `">` +
-                    x.thoigiandau + `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
-                    `</span></br>   
-                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idhettg` + data[i].masp +`_`+ solan + `" >` +
+                    data[i].thoigiandau +
+                    `</strong><br> Giá:<span style="color: red">` +
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                        <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                        data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idhettg")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idhettg", solan)
             }
         },
         error(err) {
@@ -153,6 +224,7 @@ function loadSPHetThoiGianDau(e,i) {
 
 function loadSPCongNghe(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_congnghe',
         method: 'get',
@@ -165,22 +237,21 @@ function loadSPCongNghe(e,i) {
             }
             $('#congnghe').show()
             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
-           $('.sp_congnghe').html("")
-            data.forEach(x => {
+            $('.sp_congnghe').html("")
+            for (var i = 0; i < data.length; i++) {
                 $('.sp_congnghe').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idspcn` + x.masp + `">` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idspcn` + data[i].masp + `_` + solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" + `</span></br>
-                                <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                    data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idspcn")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idspcn", solan)
             }
         },
         error(err) {
@@ -191,6 +262,7 @@ function loadSPCongNghe(e,i) {
 
 function loadSPDoGiaDung(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_dogiadung',
         method: 'get',
@@ -204,22 +276,20 @@ function loadSPDoGiaDung(e,i) {
             $('#dogiadung').show()
             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
             $('.sp_dogiadung').html("")
-            data.forEach(x => {
+            for (var i = 0; i < data.length; i++) {
                 $('.sp_dogiadung').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idspdgd` + x.masp + `">` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idspdgd` + data[i].masp + `_` + solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
-                    `</span></br>  
-                            <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                    data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){
-                thoiGianGiam(data,"idspdgd")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idspdgd", solan)
             }
         },
         error(err) {
@@ -230,6 +300,7 @@ function loadSPDoGiaDung(e,i) {
 
 function loadSPThoiTrang(e,i) {
     f = 'user'
+    solan = i
     $.ajax({
         url: '/load/sp_thoitrang',
         method: 'get',
@@ -244,22 +315,20 @@ function loadSPThoiTrang(e,i) {
             $('#thoitrang').show()
             // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
             $('.sp_thoitrang').html("")
-            data.forEach(x => {
+            for (var i = 0; i < data.length; i++) {
                 $('.sp_thoitrang').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
-                    x.hinhanh +
-                    `" width="300" hight="300"><div class="caption"><h3>` +
-                    x.info + `</h3>Thời gian:      <strong id="idsptt` + x.masp + `">` +
-                    x.thoigiandau +
+                    data[i].hinhanh +
+                    `" width="300" hight="300"><div class="caption"><h3>` + data[i].info +
+                    `</h3>Thời gian:      <strong id="idsptt` + data[i].masp + `_` + solan + `" >` +
+                    data[i].thoigiandau +
                     `</strong><br> Giá:<span style="color: red">` +
-                    x.giahientai + "K" +
-                    `</span></br>   
-                            <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
-                    x.masp + `"> Đấu Giá Ngay</button></div></div></div>`
+                    data[i].giahientai + "K" +
+                    `</span></br>
+                    <button class="btn-default" onclick="xemChitiet(this, f)" value="` +
+                    data[i].masp + `" > Đấu Giá Ngay</button></div></div></div>`
                 )
-            });
-            if(i == 0){// chỉ chạy 1 lần đầu
-                thoiGianGiam(data,"idsptt")  // truyền vào 2 tham số 1: database postgre; 2: loại id thời gian của 1 sp cụ thể
+                thoiGianGiam(data[i], "idsptt", solan)
             }
         },
         error(err) {
@@ -273,13 +342,23 @@ function loadAllSPDangDauGia() {
         url: '/load/sp_all',
         method: 'get',
         success(data) {
-            thoiGianGiam(data,"idchitietsp")    // load thời gian chạy setInterval các sản phẩm trong trang chi tiết
+            //$('#chitietsp').show()
+            data.forEach(x => {
+                $('.chitiet_sp').append(
+                    `<span style="color: red">
+                        <strong id="idchitietsp`+ x.masp + `">` + x.thoigiandau + `</strong>
+                    </span>`
+                )
+            })
+            thoiGianGiamChiTiet(data,"idchitietsp")    // load thời gian chạy setInterval các sản phẩm trong trang chi tiết
         },
         error(err) {
            console.log(err)
         },
     })
 }
+
+
 
 function showHome_User(i) {
     anALL()
@@ -298,9 +377,15 @@ $(document).ready(() => {
     anALL()
     $('#header_user').hide()
 
+    var demHome = 1
+    $('#btnhome').click(function () {
+        showHome_User(demHome);
+        demHome++
+    })
+
     var demCongnghe = 0
     $('#btncongnghe').click(function () {
-        loadSPCongNghe('user',demCongnghe)
+        loadSPCongNghe('user', demCongnghe)
         demCongnghe++
     })
 
@@ -312,18 +397,120 @@ $(document).ready(() => {
 
     var demDogiadung = 0
     $('#btndogiadung').click(function () {
-        loadSPDoGiaDung('user',demDogiadung)
+        loadSPDoGiaDung('user', demDogiadung)
         demDogiadung++
     })
 
-    $('#btnhome').click(function () {
-        showHome_User(1);
+    $('#btnDauGiaCuaToi').click(function () {
+        anALL()
+        anRandom()
+        $('#CacSPDangDauGia').show();
+        loadDauGiaCuaToi()
+    })
+    
+    $('#btnGioHang').click(function () {
+        anALL()
+        anRandom()
+        $('#idGioHang').show();
+        loadGioHang()
+        $('#btnTiepTucMua').click(function () {
+            showHome_User(demHome);
+            demHome++
+        })
+        $('#btnThanhToan').click(function () {
+            thanhToan()
+        })
     })
 
-    nutAdmin()
+    
+
+    nutAdmin()      // các nút trên header_admin bên trang admin
 })
 
+function loadDauGiaCuaToi() {
+    $.ajax({
+        url: '/load/daugiacuatoi',
+        method: 'get',
+        success(data) {
+            var i = 1
+            $('.table').html("")
+            $('table').append(
+                `<thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Giá đấu của bạn </th>
+                        <th>Giá đấu hiện tại </th>
+                        <th>Tình trạng đấu </th>
+                    </tr>
+                </thead>`
+            )
+            data.forEach(x => {
+                $('table').append(
+                    `<tr>` +
+                        `<td>`+ `<p>` + i + `</p>` + `</td>` +
+                        `<td>`+ `<p>` + x.info + `</p>` + `<td>` +
+                        `<img src="./img/`+ x.hinhanh + `"width="100" hight="100">` +
+                        `<td>`+ x.giadau + ` K </td>` +
+                        `<td>`+ x.giahientai + ` K </td>` +
+                        `<td>`+ x.tentinhtrangphieudg + `</td>` +
+                     `</tr>`
+                )
+                i++
+            })
+          
+        },
+        error(err){
+            $('.lichSuDG').status(404)
+        },
+    })
+}
 
+// Giỏ hàng của người dùng
+function loadGioHang() {
+    $.ajax({
+        url: '/load/gioHang',
+        method: 'get',
+        success(data) {
+            var tongtien = 0
+            $('.table').html("")
+            $('table').append(
+                `<thead>
+                    <tr>
+                        <th class="col-sm-2">Sản phẩm</th>
+                        <th class="col-sm-2">Số Lượng</th>
+                        <th class="col-sm-2">Đơn Giá</th>
+                    </tr>
+                </thead>`
+            )
+            data.forEach(x => { 
+                tongtien += parseInt(x.giadau)
+                $('table').append(
+                    `<tr>` +
+                        `<td class="col-sm-2">` + x.info  + `<td>` +
+                        `<td class="col-sm-2">   1 </td>` +
+                        `<td class="col-sm-2">`+ x.giadau + `000 </td>` +
+                     `</tr>`
+                )
+            })
+            $('.tongtien').append(
+                `<tr>
+                    <td>
+                        <h4>Thành tiền: ` + tongtien.toString() +`000 VNĐ </h4>
+                    </td>
+                </tr>`
+            )
+        },
+        error(err){
+            console.log(err)
+        },
+    })
+}
+
+function thanhToan() {
+    //
+}
 
 function xemChitiet(e, f) {
     //alert($(e).val())
@@ -393,8 +580,8 @@ function xemChitiet(e, f) {
                                     </div>
                                     </div> `
                     )
-    
                 });
+                
             },
             error(err) {
                 console.log(err)
@@ -502,11 +689,50 @@ function dauGia(e) {
     })
 }
 
+
+
+//      ---------------- ADMIN ----------------
 function showHome_Admin() {
     $('#login').hide()
     $('#header_admin').show()
     $('#insertSP').show();
     
+}
+
+function taoSPMoi() {
+    var ten = $('#ProName').val();
+    var gia = $('#Price').val();
+    var checkbox = document.getElementsByName("loaisp");
+    var loai = 1;
+    for (var i = 0; i < checkbox.length; i++) {
+        if (checkbox[i].checked === true) {
+            var loai = checkbox[i].value;
+        }
+    }
+    var tgbd = $('#thoigianbd').val();
+    var tgdau = $('#thoigiandaugia').val();
+    var mota = $('#FullDes').val();
+    var img = $('#idImage').val();
+
+    $.ajax({
+        url: '/createProduct',
+        method: 'get',
+        data: {
+            tensp: ten,
+            giatien: gia,
+            phanloai: loai,
+            thoigianbd: tgbd,
+            thoigiandau: tgdau,
+            chitiet: mota,
+            hinhanh: img
+        },
+        success(data) {
+            alert(data)
+        },
+        error(err) {
+            $('.thongbao').status(404)
+        },
+    })
 }
 
 function loadSPDaDG() {
@@ -560,6 +786,7 @@ function loadSPKhongDG(){
     })
 }
 
+<<<<<<< HEAD
 /*function isDelete(e){
     var id = $(e).val()
     $.ajax({
@@ -574,6 +801,8 @@ function loadSPKhongDG(){
         }
     })
 }*/
+=======
+>>>>>>> 63e75c4d60679c2a0d6572b63df602aa8939e71c
 
 function nutAdmin() {
     $('#btnthemsanpham').click(function () {
@@ -588,40 +817,7 @@ function nutAdmin() {
         anALL()
         $('#header_admin').show()
         $('#insertSP').show();
-        var ten = $('#ProName').val();
-        var gia = $('#Price').val();
-        var checkbox = document.getElementsByName("loaisp");
-        var loai = 1;
-        for (var i = 0; i < checkbox.length; i++) {
-            if (checkbox[i].checked === true) {
-                var loai = checkbox[i].value;
-            }
-        }
-        var tgbd = $('#thoigianbd').val();
-        var tgdau = $('#thoigiandaugia').val();
-        var mota = $('#FullDes').val();
-        var img = $('#idImage').val();
-
-        $.ajax({
-            url: '/createProduct',
-            method: 'get',
-            data: {
-                tensp: ten,
-                giatien: gia,
-                phanloai: loai,
-                thoigianbd: tgbd,
-                thoigiandau: tgdau,
-                chitiet: mota,
-                hinhanh: img
-            },
-            success(data) {
-                $('.thongbao').append(data)
-
-            },
-            error(err) {
-                $('.thongbao').status(404)
-            },
-        })
+        taoSPMoi()
     })
 
     var demsphot_ad = 0
@@ -707,6 +903,7 @@ function login(e) {
                        console.log(err)
                     },
                 })
+                $('#idUserHeader').text(data.username)    
                 if (data.type == "user")
                     showHome_User(0)
                 else if(data.type == "admin")
