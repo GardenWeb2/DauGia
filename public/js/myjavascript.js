@@ -499,13 +499,13 @@ $(document).ready(() => {
         anRandom()
         $('#idGioHang').show();
         loadGioHang()
-        $('#btnTiepTucMua').click(function () {
-            showHome_User(demHome);
-            demHome++
-        })
-        $('#btnThanhToan').click(function () {
-            thanhToan()
-        })
+    })
+    $('#btnTiepTucMua').click(function () {
+        showHome_User(demHome);
+        demHome++
+    })
+    $('#btnThanhToan').click(function () {
+        thanhToan()
     })
 
     $('#btndangxuat').click(function () {
@@ -523,22 +523,10 @@ function loadDauGiaCuaToi() {
         method: 'get',
         success(data) {
             var i = 1
-            $('.table').html("")
+            $('.tbody4').html("")
             if (data.status == "true") {
-                $('table').append(
-                    `<thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Hình ảnh</th>
-                            <th>Giá đấu của bạn </th>
-                            <th>Giá đấu hiện tại </th>
-                            <th>Tình trạng đấu </th>
-                        </tr>
-                    </thead>`
-                )
                 data.detail.forEach(x => {
-                    $('table').append(
+                    $('.table').append(
                         `<tr>` +
                         `<td>` + `<p>` + i + `</p>` + `</td>` +
                         `<td>` + `<p>` + x.info + `</p>` + `<td>` +
@@ -551,7 +539,9 @@ function loadDauGiaCuaToi() {
                     i++
                 })
             }
-
+            else{
+                $('.table').html("")
+            }
         },
         error(err) {
             $('.lichSuDG').status(404)
@@ -566,21 +556,12 @@ function loadGioHang() {
         method: 'get',
         success(data) {
             var tongtien = 0
-            $('.table').html("")
+            $('.tbody3').html("")
+            $('.tongTien').html("")
             if (data.status == "true") {
-                $('table').append(
-                    `<thead>
-                        <tr>
-                            <th class="col-sm-2">Sản phẩm</th>
-                            <th class="col-sm-2">Số Lượng</th>
-                            <th class="col-sm-2">Đơn Giá</th>
-                            <th class="col-sm-2"> Xóa Sản Phẩm </th>
-                        </tr>
-                    </thead>`
-                )
                 data.detail.forEach(x => {
                     tongtien += parseInt(x.giadau)
-                    $('table').append(
+                    $('.tableShopping').append(
                         `<tr>` +
                         `<td class="col-sm-2">` + x.info + `</td>
                             <td class="col-sm-2">   1 </td>
@@ -589,16 +570,18 @@ function loadGioHang() {
                          </tr>`
                     )
                 })
-                $('table').append(
-                    `<tfoot> <tr>
+                $('.tongTien').append(
+                    `<tr>
                         <td>
                             <h4>Thành tiền:         ` + tongtien.toString() + `000 VNĐ </h4>
                         </td>
-                        </tr>  </tfoot>`
+                    </tr> `
                 )
                 $('.luachon').show()
             }
-
+            else{
+                $('.tableShopping').html("")
+            }
         },
         error(err) {
             console.log(err)
@@ -606,6 +589,8 @@ function loadGioHang() {
     })
 }
 
+// khi người dùng nhấn nút thanh toán trong giỏ hàng,
+// sẽ đổi cột thanhtian trong phiendaugia thành 'true'
 function thanhToan() {
     $.ajax({
         url: '/thanhToan',
@@ -664,10 +649,10 @@ function xemChitiet(e, f) {
                                                 <span class="glyphicon glyphicon-minus"></span>
                                                 </button>
                                                 </span>
-                                                <input value="`+ giadau_toithieu + `" id="giadau" class="form-control input-number" type="text" style="width: 50px">
+                                                <input value="`+ giadau_toithieu + `" id="giadau" class="form-control input-number" type="text" style="width: 70px">
                                                 <button onclick="giaTienThayDoi(this)" value="cong" class="btn btn-success btn-number" data-type="plus" data-field="quant">
                                                     <span class="glyphicon glyphicon-plus"></span>
-                                                </button>
+                                                </button> K
                                             </div>
                                             <br>
                                             
@@ -800,14 +785,12 @@ function dauGia(e) {
 
 function khongMua(e){
     var maphiendg = $(e).val()
-    //console.log(maphiendg)
-
     $.ajax({
         url: '/updateKhongThanhToan/' + maphiendg,
-        method: 'delete',
-        success: function(response){
-            alert(data)
-            loadGioHang()
+        method: 'get',
+        success(data){  //: function(response){
+            // alert(data)
+             loadGioHang()
         },
         error(err) {
             alert(err)
