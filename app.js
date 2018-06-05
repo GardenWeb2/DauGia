@@ -4,9 +4,9 @@ var app = express();
 var pg = require('pg');
 var config = {
     user: 'postgres',
-    database: 'daugia',
-    password: '1234',
-    port: 5432,
+    database: 'daugia', 
+    password: '123456', 
+    port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
 };
@@ -148,18 +148,18 @@ app.get('/load/sp_hot', (req, res) => {
                     WHERE s.masp = p.masp
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.giahientai DESC
-                    limit 5 `
-            , function (err, result) {
-                //call `done()` to release the client back to the pool
-                done();
-                if (err) {
-                    res.end();
-                    console.log(err);
-                    res.status(400).send(err)
-                }
-                res.json(result.rows)
-            });
-    });
+                    limit 8 `
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            res.json(result.rows)
+        });
+     });
 })
 //Load Trang Sp HẾT THỜI GIAN ĐẤU GIÁ là sp có thời gian đấu giá sắp hết ASC hoặc DESC
 app.get('/load/sp_hettg', (req, res) => {
@@ -173,18 +173,18 @@ app.get('/load/sp_hettg', (req, res) => {
                     WHERE s.masp = p.masp
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.thoigiandau ASC
-                    limit 5 `
-            , function (err, result) {
-                //call `done()` to release the client back to the pool
-                done();
-                if (err) {
-                    res.end();
-                    console.log(err);
-                    res.status(400).send(err)
-                }
-                res.json(result.rows)
-            });
-    });
+                    limit 8 `
+        ,function(err,result) {
+           //call `done()` to release the client back to the pool
+            done(); 
+            if(err){
+                res.end();
+                console.log(err);
+                res.status(400).send(err)
+            }
+            res.json(result.rows)
+        });
+     });
 })
 
 //Load Trang Sp CÔNG NGHỆ là sp thuộc loại Công nghệ
