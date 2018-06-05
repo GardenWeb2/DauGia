@@ -117,13 +117,81 @@
 
 
                         <div class="row" id="login2">
-
                             <div class="col-md-9"></div>
-                            <button type="button" onclick="dangki(this)" class="btn btn-link">Đăng kí</button>
+                            <button type="button" id="btndangki" class="btn btn-link">Đăng kí</button>
                             <div class="col-md-1">
-
-                                <button type="button" onclick="login(this)" class="btn btn-info">Hoàn tất</button>
+                                <button type="button" onclick="login()" class="btn btn-info">Hoàn tất</button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign up-->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default" id="signup">
+                    <div class="loginText">
+                        <h2>Đăng kí</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row" id="signup2">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <h4>Username: </h4>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="user" class="form-control" type="text"/>
+                            </div>
+                        </div>
+                        <!-- ---- -->
+                        <div class="row" id="signup2">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <h4>Address: </h4>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="add" class="form-control" type="text"/>
+                            </div>
+                        </div>
+                        <!-- ---- -->
+                        <div class="row" id="signup2">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <h4>Phone number: </h4>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="phone" class="form-control" type="text"/>
+                            </div>
+                        </div>
+                        <!-- ---- -->
+                        <div class="row" id="signup2">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <h4>Password: </h4>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="pass" class="form-control" type="password"/>
+                            </div>
+                        </div>
+                        <!-- ---- -->
+                        <div class="row" id="signup2">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-2">
+                                <h4>Password again: </h4>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="passa" class="form-control" type="password"/>
+                            </div>
+                        </div>
+                        <!-- ---- -->
+
+                        <div class="row" id="login2">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-1">
+                                    <button type="button" onclick="signup()" class="btn btn-info">Hoàn tất</button>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -148,7 +216,7 @@
                                     <button class="navbar-brand" id="btnsphot2">Sản phẩm hot</button>
                                 </li>
                                 <li>
-                                    <button class="navbar-brand" id="btnspshtg">Sắp hết thời gian</button>
+                                    <button class="navbar-brand" id="btnspshtg">Sắp sắp hết thời gian</button>
                                 </li>
                                 <li>
                                     <button class="navbar-brand" id="btncongnghe2">Đồ công nghệ</button>
@@ -268,7 +336,7 @@
         <div class="panel panel-default" id="hetthoigian">
             <div class="navigat">
 
-                <h2>Sản phẩm hết giờ đấu giá</h2>
+                <h2>Sản phẩm sắp hết giờ đấu giá</h2>
             </div>
             <div class="panel-body sp_hettg">
 
