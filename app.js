@@ -5,7 +5,7 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '123123', 
+    password: '123456', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
@@ -101,7 +101,7 @@ app.get('/load/sp_hot', (req, res)=>{
                     WHERE s.masp = p.masp
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.giahientai DESC
-                    limit 5 `
+                    limit 8 `
         ,function(err,result) {
            //call `done()` to release the client back to the pool
             done(); 
@@ -126,7 +126,7 @@ app.get('/load/sp_hettg', (req, res)=>{
                     WHERE s.masp = p.masp
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.thoigiandau ASC
-                    limit 5 `
+                    limit 8 `
         ,function(err,result) {
            //call `done()` to release the client back to the pool
             done(); 
