@@ -5,7 +5,7 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia',
-    password: '123123',
+    password: '1234',
     port: 5432,
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
@@ -420,6 +420,32 @@ app.get('/load/gioHang', (req, res) => {
                 }
             });
     });
+})
+
+
+
+// khi người dùng muốn xóa 1 sp khi đã đấu giá thành công và hiện trên giỏ hàng
+app.delete('/updateKhongThanhToan/:a', (req, res) => {
+    var maphiendaugia = parseInt(req.params['a'])
+    console.log(maphiendaugia)
+    pool.connect(function(err, client, done){
+        if(err){
+            console.log("not able to get connect" + err)
+            res.status(404).send(err)
+        }
+        client.query(`update phiendaugia
+                    set matinhtrang = 5
+                    where maphiendg = ` + maphiendaugia 
+        ,function(err, result){
+            done()
+            if(err){
+                res.end()
+                console.log("Loi: " + err)
+                res.status(404).send(err)
+            }
+            res.send("Xóa sản phẩm trong giỏ hàng thành công")
+        })
+    })
 })
 
 // Khi ng dùng nhấn nút thanh toán trong giỏ hàng

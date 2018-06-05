@@ -574,6 +574,7 @@ function loadGioHang() {
                             <th class="col-sm-2">Sản phẩm</th>
                             <th class="col-sm-2">Số Lượng</th>
                             <th class="col-sm-2">Đơn Giá</th>
+                            <th class="col-sm-2"> Xóa Sản Phẩm </th>
                         </tr>
                     </thead>`
                 )
@@ -584,6 +585,7 @@ function loadGioHang() {
                         `<td class="col-sm-2">` + x.info + `</td>
                             <td class="col-sm-2">   1 </td>
                             <td class="col-sm-2">`+ x.giadau + `000 </td>
+                            <td class="col-sm-2">  <button class="btn-default" onclick="khongMua(this)" value="` + x.maphiendg + `"> Xóa </button>  </td>
                          </tr>`
                     )
                 })
@@ -796,6 +798,23 @@ function dauGia(e) {
     })
 }
 
+function khongMua(e){
+    var maphiendg = $(e).val()
+    //console.log(maphiendg)
+
+    $.ajax({
+        url: '/updateKhongThanhToan/' + maphiendg,
+        method: 'delete',
+        success: function(response){
+            alert(data)
+            loadGioHang()
+        },
+        error(err) {
+            alert(err)
+           console.log(err)
+        },
+    })
+}
 
 
 //      ---------------- ADMIN ----------------
