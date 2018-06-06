@@ -4,9 +4,9 @@ var app = express();
 var pg = require('pg');
 var config = {
     user: 'postgres',
-    database: 'daugia', 
-    password: '123456', 
-    port: 5432, 
+    database: 'daugia',
+    password: '123123',
+    port: 5432,
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
 };
@@ -149,17 +149,17 @@ app.get('/load/sp_hot', (req, res) => {
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.giahientai DESC
                     limit 8 `
-        ,function(err,result) {
-           //call `done()` to release the client back to the pool
-            done(); 
-            if(err){
-                res.end();
-                console.log(err);
-                res.status(400).send(err)
-            }
-            res.json(result.rows)
-        });
-     });
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
 })
 //Load Trang Sp HẾT THỜI GIAN ĐẤU GIÁ là sp có thời gian đấu giá sắp hết ASC hoặc DESC
 app.get('/load/sp_hettg', (req, res) => {
@@ -174,17 +174,17 @@ app.get('/load/sp_hettg', (req, res) => {
                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
                     ORDER BY p.thoigiandau ASC
                     limit 8 `
-        ,function(err,result) {
-           //call `done()` to release the client back to the pool
-            done(); 
-            if(err){
-                res.end();
-                console.log(err);
-                res.status(400).send(err)
-            }
-            res.json(result.rows)
-        });
-     });
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
 })
 
 //Load Trang Sp CÔNG NGHỆ là sp thuộc loại Công nghệ
@@ -260,9 +260,6 @@ app.get('/load/sp_dogiadung', (req, res) => {
     });
 })
 
-
-
-
 // Update Thời gian đấu giá mỗi 1s
 app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
     var id_sp = parseInt(req.params['id'])
@@ -288,8 +285,6 @@ app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
             })
     });
 })
-
-
 
 // Update Tình trạng phiên đấu giá khi hết thời gian + 
 // Update mã phiếu đấu thắng vào table phiendaugia nếu phiên đgđấu giá đó có người đấu giá
@@ -422,29 +417,27 @@ app.get('/load/gioHang', (req, res) => {
     });
 })
 
-
-
 // khi người dùng muốn xóa 1 sp khi đã đấu giá thành công và hiện trên giỏ hàng
 app.get('/updateKhongThanhToan/:a', (req, res) => {
     var maphiendaugia = parseInt(req.params['a'])
     console.log(maphiendaugia)
-    pool.connect(function(err, client, done){
-        if(err){
+    pool.connect(function (err, client, done) {
+        if (err) {
             console.log("not able to get connect" + err)
             res.status(404).send(err)
         }
         client.query(`update phiendaugia
                     set matinhtrang = 5
-                    where maphiendg = ` + maphiendaugia 
-        ,function(err, result){
-            done()
-            if(err){
-                res.end()
-                console.log("Loi: " + err)
-                res.status(404).send(err)
-            }
-            res.send("Xóa sản phẩm trong giỏ hàng thành công")
-        })
+                    where maphiendg = ` + maphiendaugia
+            , function (err, result) {
+                done()
+                if (err) {
+                    res.end()
+                    console.log("Loi: " + err)
+                    res.status(404).send(err)
+                }
+                res.send("Xóa sản phẩm trong giỏ hàng thành công")
+            })
     })
 })
 
@@ -509,6 +502,28 @@ app.get('/load/chitiet/:id', (req, res) => {
                     res.end();
                     console.log(err);
                     res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
+})
+
+app.get('/loadtop10/:id', (req, res) => {
+    var id_sp = parseInt(req.params['id'])
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`SELECT t.tentk, ph.giadau
+                    FROM taikhoan t, phiendaugia p, phieudaugia ph
+                    WHERE p.masp = ` + id_sp + `and ph.maphiendg = p.maphiendg and t.matk = ph.matk
+                    ORDER BY ph.giadau DESC`
+            ,function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
                 }
                 res.json(result.rows)
             });

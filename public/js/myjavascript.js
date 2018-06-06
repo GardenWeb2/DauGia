@@ -22,6 +22,7 @@ function anALL() {
     $('#insertSP').hide()
     $('#spDaDG').hide()
     $('#spKhongDG').hide()
+    $('#spKhongTT').hide()
 }
 
 
@@ -512,8 +513,6 @@ $(document).ready(() => {
         location.reload();
     })
 
-
-
     nutAdmin()      // các nút trên header_admin bên trang admin
 })
 
@@ -626,7 +625,7 @@ function xemChitiet(e, f) {
                                 <img src='./img/` + x.hinhanh + `' width="300px" hight="350px">           
                         </div>
                             </div>
-                            <div class="col-sm-9 col-md-9">
+                            <div class="col-sm-5 col-md-5">
                                 <div class="thumbnail" style="height:350px">
                                     <div class="caption" aligint="center">
                                         <h4> Kết thúc trong: </h4>
@@ -662,6 +661,26 @@ function xemChitiet(e, f) {
                                         <input id="idmaPhienDG" value="`+ x.maphiendg + `"type="hidden">
                                         
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-md-4">
+                                <div class="thumbnail" style="height:350px">
+                                    <div class="navigat">
+                                        <h2>Top 10 đấu giá:</h2>
+                                    </div>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>User</th>
+                                                <th>Giá đấu</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="tbodytop10">
+                                            <div class="top10">
+                                            </div>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                                 <!--    Phần dưới chi tiết thông tin       !-->
@@ -700,7 +719,7 @@ function xemChitiet(e, f) {
                                 <img src='./img/` + x.hinhanh + `' width="300px" hight="350px">           
                         </div>
                             </div>
-                            <div class="col-sm-9 col-md-9">
+                            <div class="col-sm-5 col-md-5">
                                 <div class="thumbnail" style="height:350px">
                                     <div class="caption" aligint="center">
                                         <h4> Kết thúc trong: </h4>
@@ -722,6 +741,26 @@ function xemChitiet(e, f) {
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-4 col-md-4">
+                                <div class="thumbnail" style="height:350px">
+                                    <div class="navigat">
+                                        <h2>Top 10 đấu giá:</h2>
+                                    </div>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>User</th>
+                                                <th>Giá đấu</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="tbodytop10">
+                                            <div class="top10">
+                                            </div>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                                 <!--    Phần dưới chi tiết thông tin       !-->
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
@@ -739,8 +778,44 @@ function xemChitiet(e, f) {
                 console.log(err)
             },
         })
-    }
+    }loadTop10(id)
+}
 
+function loadTop10(e){
+    var id = $(e).val()
+    $.ajax({
+        url: '/loadtop10/' + e,
+        method: 'get',
+        success(data) {
+            $('.tbodytop10').html("")
+            var i = 1
+            data.forEach(x => {
+                if(i == 1){
+                    $('.table').append(
+                        `<tr>` +
+                        `<td>` + `<p> <span class="glyphicon glyphicon-king\ư   11q\    1q"></span>` + i + `</p>` + `</td>` +
+                        `<td>` + `<p>` + x.tentk + `</p>` +  `</td>` +
+                        `<td>` + `<p>` + x.giadau + `</p>` +  `</td>` +
+                        `</tr>`
+                    )
+                }
+                else{
+                    $('.table').append(
+                        `<tr>` +
+                        `<td>` + `<p>` + i + `</p>` + `</td>` +
+                        `<td>` + `<p>` + x.tentk + `</p>` +  `</td>` +
+                        `<td>` + `<p>` + x.giadau + `</p>` +  `</td>` +
+                        `</tr>`
+                    )
+                }
+                i++
+            })
+        },
+        error(err) {
+            console.log(err)
+            $('.top10').status(404)
+        }
+    })
 }
 
 function giaTienThayDoi(e) {
@@ -762,6 +837,7 @@ function giaTienThayDoi(e) {
 }
 
 function dauGia(e) {
+    var id = $(e).val()
     var maphiendg = $('#idmaPhienDG').val()
     var giadau = $('#giadau').val()
     var tinhtrangphieu = 1
@@ -781,6 +857,7 @@ function dauGia(e) {
             console.log(err)
         },
     })
+   // xemChitiet(id, "user")
 }
 
 function khongMua(e){
@@ -903,6 +980,10 @@ function loadSPKhongDG() {
             $('.sp_KhongDG').status(404)
         }
     })
+}
+
+function loadSPKhongTT(){
+    
 }
 
 function isDelete(e) {
