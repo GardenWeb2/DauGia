@@ -725,7 +725,7 @@ function xemChitiet(e, f) {
                                 <img src='./img/` + x.hinhanh + `' width="300px" hight="350px">           
                         </div>
                             </div>
-                            <div class="col-sm-9 col-md-9">
+                            <div class="col-sm-5 col-md-5">
                                 <div class="thumbnail" style="height:350px">
                                     <div class="caption" aligint="center">
                                         <h4> Kết thúc trong: </h4>
@@ -796,13 +796,24 @@ function loadTop10(e){
             $('.tbodytop10').html("")
             var i = 1
             data.forEach(x => {
-                $('.table').append(
-                    `<tr>` +
-                    `<td>` + `<p>` + i + `</p>` + `</td>` +
-                    `<td>` + `<p>` + x.tentk + `</p>` +  `</td>` +
-                    `<td>` + `<p>` + x.giadau + `</p>` +  `</td>` +
-                    `</tr>`
-                )
+                if(i == 1){
+                    $('.table').append(
+                        `<tr>` +
+                        `<td>` + `<p> <span class="glyphicon glyphicon-king"></span>` + i + `</p>` + `</td>` +
+                        `<td>` + `<p>` + x.tentk + `</p>` +  `</td>` +
+                        `<td>` + `<p>` + x.giadau + `</p>` +  `</td>` +
+                        `</tr>`
+                    )
+                }
+                else{
+                    $('.table').append(
+                        `<tr>` +
+                        `<td>` + `<p>` + i + `</p>` + `</td>` +
+                        `<td>` + `<p>` + x.tentk + `</p>` +  `</td>` +
+                        `<td>` + `<p>` + x.giadau + `</p>` +  `</td>` +
+                        `</tr>`
+                    )
+                }
                 i++
             })
         },
@@ -832,6 +843,7 @@ function giaTienThayDoi(e) {
 }
 
 function dauGia(e) {
+    var id = $(e).val()
     var maphiendg = $('#idmaPhienDG').val()
     var giadau = $('#giadau').val()
     var tinhtrangphieu = 1
@@ -851,6 +863,7 @@ function dauGia(e) {
             console.log(err)
         },
     })
+   // xemChitiet(id, "user")
 }
 
 function khongMua(e){
