@@ -458,11 +458,17 @@ $(document).ready(() => {
     anALL()
     $('#header_user').hide()
 
+    $('#btnDangNhap').click(function () {
+        $('#login').show()
+        $('#signup').hide()
+    })
+
+
     $('#btndangki').click(function () {
         $('#login').hide()
         $('#signup').show()
     })
-
+    
     var demHome = 1
     $('#btnhome').click(function () {
         showHome_User(demHome);
