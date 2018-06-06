@@ -626,7 +626,7 @@ function xemChitiet(e, f) {
                                 <img src='./img/` + x.hinhanh + `' width="300px" hight="350px">           
                         </div>
                             </div>
-                            <div class="col-sm-9 col-md-9">
+                            <div class="col-sm-5 col-md-5">
                                 <div class="thumbnail" style="height:350px">
                                     <div class="caption" aligint="center">
                                         <h4> Kết thúc trong: </h4>
@@ -662,6 +662,26 @@ function xemChitiet(e, f) {
                                         <input id="idmaPhienDG" value="`+ x.maphiendg + `"type="hidden">
                                         
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-md-4">
+                                <div class="thumbnail" style="height:350px">
+                                <div class="navigat">
+                                <h2>Top 10 đấu giá:</h2>
+                            </div>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>User</th>
+                                        <th>Giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tbody2">
+                                    <div class="sp_KhongDG">
+                                    </div>
+                                </tbody>
+                            </table>
                                 </div>
                             </div>
                                 <!--    Phần dưới chi tiết thông tin       !-->
