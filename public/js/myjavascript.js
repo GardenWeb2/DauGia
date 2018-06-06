@@ -464,6 +464,11 @@ $(document).ready(() => {
         $('#signup').show()
     })
 
+    $('#btnDangNhap').click(function () {
+        $('#login').show()
+        $('#signup').hide()
+    })
+
     var demHome = 1
     $('#btnhome').click(function () {
         showHome_User(demHome);
@@ -793,7 +798,7 @@ function loadTop10(e){
                 if(i == 1){
                     $('.table').append(
                         `<tr>` +
-                        `<td>` + `<p> <span class="glyphicon glyphicon-king\ư   11q\    1q"></span>` + i + `</p>` + `</td>` +
+                        `<td>` + `<p> <span class="glyphicon glyphicon-king"></span>` + i + `</p>` + `</td>` +
                         `<td>` + `<p>` + x.tentk + `</p>` +  `</td>` +
                         `<td>` + `<p>` + x.giadau + `</p>` +  `</td>` +
                         `</tr>`

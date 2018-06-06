@@ -4,9 +4,15 @@ var app = express();
 var pg = require('pg');
 var config = {
     user: 'postgres',
+<<<<<<< HEAD
     database: 'daugia',
     password: '123123',
     port: 5432,
+=======
+    database: 'daugia', 
+    password: '123456789', 
+    port: 5432, 
+>>>>>>> 7fd2a9ab734d68d493fed75bba3b8bc032010a9b
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
 };
@@ -418,7 +424,7 @@ app.get('/load/gioHang', (req, res) => {
 })
 
 // khi người dùng muốn xóa 1 sp khi đã đấu giá thành công và hiện trên giỏ hàng
-app.get('/updateKhongThanhToan/:a', (req, res) => {
+app.delete('/updateKhongThanhToan/:a', (req, res) => {
     var maphiendaugia = parseInt(req.params['a'])
     console.log(maphiendaugia)
     pool.connect(function (err, client, done) {
@@ -451,9 +457,8 @@ app.get('/thanhToan', (req, res) => {
         }
 
         client.query(`SELECT ph.*
-                    FROM phieudaugia ph, tinhtrangphieudg t, phiendaugia p, tinhtrangphiendg tt
+                    FROM phieudaugia ph, tinhtrangphieudg t, phiendaugia p
                     WHERE ph.matinhtrang = t.matinhtrangphieudg and t.tentinhtrangphieudg = 'dau gia thanh cong' 
-                    and p.matinhtrang = tt.matinhtrangphiendg and tt.tentinhtrangphiendg = 'da dau gia' 
                     and p.maphieudauthang = ph.maphieudg and ph.matk = ` + matk
             , function (err, result) {
                 //call `done()` to release the client back to the pool
@@ -467,8 +472,8 @@ app.get('/thanhToan', (req, res) => {
                     console.log("MA PHIEU Da Dau thang: " + result.rows[i].maphieudg)
                     //xét xem ma phieu nào đã đấu thắng trong tất cả các mã phiếu
                     client.query(`update phiendaugia
-                                set thanhtoan ='true'
-                                where maphieudauthang = `+ result.rows[i].maphieudg
+                    set thanhtoan ='true'
+                    where maphieudauthang = `+ result.rows[i].maphieudg
                         , function (err, result1) {
                             //call `done()` to release the client back to the pool
                             done();
