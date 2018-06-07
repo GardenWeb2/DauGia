@@ -17,6 +17,7 @@ function anALL() {
     //an ben admin
     $('.sp_DaDG').html("")
     $('.sp_KhongDG').html("")
+    $('.sp_KhongTT').html("")
     $('.menu').hide();
     $('#header_admin').hide()
     $('#insertSP').hide()
@@ -962,6 +963,7 @@ function loadSPDaDG() {
 }
 
 function loadSPKhongDG() {
+    f = 1
     $.ajax({
         url: '/load/sp_khongdaugia',
         method: 'get',
@@ -975,7 +977,7 @@ function loadSPKhongDG() {
                     `<td>` + x.masp + `</td>` +
                     `<td>` + `<p>` + x.info + `</p>` + `<td>` +
                     `<img src="./img/` + x.hinhanh + `"width="100" hight="100">` +
-                    `<td><button class="btn-default" onclick="isDelete(this)" value="` + x.masp + `"> Delete </button></td>`
+                    `<td><button class="btn-default" onclick="isDelete(this, f)" value="` + x.masp + `"> Delete </button></td>`
                     + `</tr>`
                 )
                 i++
@@ -987,23 +989,72 @@ function loadSPKhongDG() {
     })
 }
 
-function loadSPKhongTT(){
-    
+function loadSPKhongTT(){  
+    f = 2
+    $.ajax({
+        url: '/donotpay',
+        method: 'get',
+        success(data){
+            $('.tbody3').html("")
+            var i = 1
+            data.forEach(x => {
+                $('.table1').append(
+                    `<tr>`+ 
+                        `<td>` + i + `</td>` +
+                        `<td>` + x.masp + `</td>` +
+                        `<td>` + x.info + `</td>` +
+                        `<td><img src="./img/` + x.hinhanh + `"width="100" hight="100"> </td>` +
+                        `<td>` + x.solandg + `</td>` +
+                        `<td><button class="btn-default" onclick="isInsertForPay()" value="` + x.masp + `"> Insert </button></td>` +
+                        `<td><button class="btn-default" onclick="isDelete(this, f)" value="` + x.masp + `"> Delete </button></td>` +
+                    `</tr>`
+                )
+                i++
+            })
+        },
+        error(err){
+            $('.sp_KhongTT').status(404)
+        }     
+    })
 }
 
-function isDelete(e) {
+function isInsertForPay(){
+    anRandom()
+    anALL()
+    $('#header_admin').show()
+    $('#insertSP').show()
+}
+
+function isDelete(e, f) {
     var id = $(e).val()
-    $.ajax({
-        url: '/delete/' + id,
-        method: 'delete',
-        success: function (response) {
-            loadSPKhongDG()
-        },
-        error(err) {
-            console.log(err)
-            alert("Xóa không thành công!")
-        }
-    })
+    if (f == 1)
+    {
+        $.ajax({
+            url: '/delete/' + id,
+            method: 'delete',
+            success: function (response) {
+               loadSPKhongDG()
+            },
+            error(err) {
+                console.log(err)
+                alert("Xóa không thành công!")
+            }
+        })
+    }
+    else if (f == 2){
+        $.ajax({
+            url: '/delete/' + id,
+            method: 'delete',
+            success: function (response) {
+                loadSPKhongTT()
+            },
+            error(err) {
+                console.log(err)
+                alert("Xóa không thành công!")
+            }
+        })
+    }
+    
 }
 
 function nutAdmin() {
@@ -1018,8 +1069,8 @@ function nutAdmin() {
         anRandom()
         anALL()
         $('#header_admin').show()
-        $('#insertSP').show();
-        taoSPMoi()
+        $('#insertSP').show()
+        taoSPMoi() 
     })
 
     var demsphot_ad = 0
@@ -1063,7 +1114,7 @@ function nutAdmin() {
         anALL()
         anRandom()
         $('#header_admin').show()
-        $('#spDaDG').show();
+        $('#spDaDG').show()
         $('.sp_DaDG').show()
         $('.sp_KhongDG').hide()
         loadSPDaDG()
@@ -1073,10 +1124,19 @@ function nutAdmin() {
         anALL()
         anRandom()
         $('#header_admin').show()
-        $('#spKhongDG').show();
+        $('#spKhongDG').show()
         $('.sp_KhongDG').show()
         $('.sp_DaDG').hide()
         loadSPKhongDG()
+    })
+
+    $('#btnkhongthanhtoan').click(function(){
+        anALL()
+        anRandom()
+        $('#header_admin').show()
+        $('#spKhongTT').show()
+        $('.sp_KhongTT').show()
+        loadSPKhongTT()
     })
 
     $('#btndangxuatadmin').click(function () {

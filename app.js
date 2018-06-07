@@ -4,15 +4,9 @@ var app = express();
 var pg = require('pg');
 var config = {
     user: 'postgres',
-<<<<<<< HEAD
     database: 'daugia',
     password: '123123',
     port: 5432,
-=======
-    database: 'daugia', 
-    password: '123456789', 
-    port: 5432, 
->>>>>>> 7fd2a9ab734d68d493fed75bba3b8bc032010a9b
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
 };
@@ -662,6 +656,28 @@ app.get('/load/sp_khongdaugia', (req, res) => {
                 res.json(result.rows)
             });
     });
+})
+
+app.get('/donotpay', (req, res) =>{
+    pool.connect(function(err, client, done){
+        if (err) {
+            console.log("not able to get connect" + err)
+            res.status(404).send(err)
+        }
+        client.query(`SELECT p.*, s.* ,(select count(*)
+                    from phiendaugia p2
+                    where p2.masp = p.masp) as solandg
+                    FROM phiendaugia p, sanpham s
+                    WHERE matinhtrang = 5 and p.masp = s.masp and s.isdelete = false`
+        , function(err, result){
+            done()
+            if(err){
+                console.log(err)
+                res.end()
+            }
+            res.json(result.rows)
+        })
+    })
 })
 
 app.delete('/delete/:a', (req, res) => {
