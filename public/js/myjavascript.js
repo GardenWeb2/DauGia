@@ -470,11 +470,22 @@ $(document).ready(() => {
         $('#login').show()
         $('#signup').hide()
     })
+
+
+
+
+
+
     $('#btnUserHeader').click(function () {
         anALL()
         anRandom()
         $('#UserHeader').show()
+        loadInfoUser()
     })
+
+
+
+
 
     var demHome = 1
     $('#btnhome').click(function () {
@@ -560,6 +571,27 @@ function loadDauGiaCuaToi() {
     })
 }
 
+// Thogn tin cua tai khoan dang dang nhap
+ function loadInfoUser() {
+     $.ajax({
+         url: '/load/InfoUser',
+         method: 'get',
+         success(data) {
+            if (data.status == "true") {
+                //console.log(data.detail[0].tentk);
+                $('#Ten').val(data.detail[0].tentk);
+                $('#SDT').val(data.detail[0].sdt);
+                $('#DiaChi').val(data.detail[0].diachi);
+            }
+            else{
+                console.log(err)
+            }
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
+ }
 // Giỏ hàng của người dùng
 function loadGioHang() {
     $.ajax({
