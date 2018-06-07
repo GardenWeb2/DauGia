@@ -5,6 +5,7 @@ function anRandom() {
 
 function anALL() {
     // an ben user
+    $('#UserHeader').hide()
     $('#signup').hide()
     $('#congnghe').hide()
     $('#thoitrang').hide()
@@ -467,6 +468,11 @@ $(document).ready(() => {
     $('#btnDangNhap').click(function () {
         $('#login').show()
         $('#signup').hide()
+    })
+    $('#btnUserHeader').click(function () {
+        anALL()
+        anRandom()
+        $('#UserHeader').show()
     })
 
     var demHome = 1
