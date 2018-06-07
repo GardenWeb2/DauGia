@@ -4,15 +4,9 @@ var app = express();
 var pg = require('pg');
 var config = {
     user: 'postgres',
-<<<<<<< HEAD
-    database: 'daugia',
-    password: '123123',
-    port: 5432,
-=======
     database: 'daugia', 
-    password: '123456789', 
+    password: '123456', 
     port: 5432, 
->>>>>>> 7fd2a9ab734d68d493fed75bba3b8bc032010a9b
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
 };
