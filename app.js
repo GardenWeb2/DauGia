@@ -425,6 +425,44 @@ app.get('/load/InfoUser', (req,res) =>{
 
 
 
+// update lại thông tin user muốn chỉnh sữa
+
+app.get('/update/InfoUser', (req, res) => {
+    console.log("Cookie is " + req.cookies['user_id'])
+    var matk = parseInt(req.cookies['user_id'])
+    //var tendn = req.query.tendn
+    var pass1 = req.query.mk1
+    var pass2 = req.query.mk2
+    var sdt = parseInt(req.query.sdt)
+    var diachi = req.query.diachi
+
+    //console.log(tendn);
+
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`update taikhoan
+                      set matkhau = `+pass1+`,sdt =`+sdt+`,diachi = `+diachi+`
+                      WHERE matk = `+matk+``
+                , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+
+                else {
+                    res.send("update thông tin thành công");
+                    
+                }
+            });
+    })
+})
+
 
 // Load các sản phẩm mà user đấu giá thành công khi nhấn nút Giỏ Hàng trên header_user
 app.get('/load/gioHang', (req, res) => {

@@ -6,6 +6,7 @@ function anRandom() {
 function anALL() {
     // an ben user
     $('#UserHeader').hide()
+    $('#ChinhSuaUserHeader').hide()
     $('#signup').hide()
     $('#congnghe').hide()
     $('#thoitrang').hide()
@@ -483,6 +484,18 @@ $(document).ready(() => {
         loadInfoUser()
     })
 
+    
+    $('#ChinhSuaInfoUser').click(function () {
+        anALL()
+        anRandom()
+        $('#ChinhSuaUserHeader').show()
+    })
+
+    $('#UpdateInfoUser').click(function () {
+        anALL()
+        anRandom()
+        UpdateInfoUser()
+    })
 
 
 
@@ -592,6 +605,48 @@ function loadDauGiaCuaToi() {
         },
     })
  }
+
+
+
+ 
+// update lai thong tin cua user khi chinh sua
+function UpdateInfoUser(){
+    //var tendn =  $('#TenUser').val();
+    $('#TenUser').text($('#idUserHeader').text)
+    var mk1 = $('#pass1').val();
+    var mk2 = $('#pass2').val();
+    var sdt = $('#updateSDT').val();
+    var diachi = $('#updateDiaChi').val();
+
+    loadlaiformChinhSua()
+
+    $.ajax({
+        url: '/update/InfoUser',
+        method: 'get',
+        data: {
+            //tendn:tendn,
+            mk1: mk1,
+            mk2: mk2,
+            sdt: sdt,
+            diachi: diachi
+        },
+        success(data) {
+            alert(data)
+        }
+    })
+    
+}
+function loadlaiformChinhSua(){
+    $('#TenUser').val("");
+    $('#pass1').val("");
+    $('#pass2').val("");
+    $('#updateSDT').val("");
+    $('#updateDiaChi').val("");
+}
+
+
+
+
 // Giỏ hàng của người dùng
 function loadGioHang() {
     $.ajax({
