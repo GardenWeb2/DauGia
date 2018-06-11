@@ -963,7 +963,7 @@ function khongMua(e){
     var maphiendg = $(e).val()
     $.ajax({
         url: '/updateKhongThanhToan/' + maphiendg,
-        method: 'get',
+        method: 'delete',
         success(data){  //: function(response){
             // alert(data)
              loadGioHang()
