@@ -5,12 +5,13 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '123123', 
+    password: '1234', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
 };
-var pool = new pg.Pool(config);
+var pool = new pg.Pool(config)
+
 
 var cookieParser = require('cookie-parser')
 app.use(cookieParser())
@@ -22,12 +23,27 @@ app.get('/index', (req, res) => {
     res.sendfile('index.html')
 })
 
+var temp = 0
 
-app.get('/setCookie/:matk', (req, res, next) => {
+app.get('/setCookie/:matk/:type', (req, res, next) => {
     var matk = req.params['matk']
+    temp = req.params['type']
+        
     var expireTime = 3600
     res.cookie('user_id', matk, { expire: new Date() + expireTime })
     res.end("DONE")
+})
+
+
+app.all('/user/*', (req, res, next) => {
+    if(temp == 'user')
+        next()
+})
+
+
+app.all('/admin/*', (req, res, next) => {
+    if(temp == 'admin')
+        next()
 })
 
 app.get('/login', (req, res) => {
@@ -137,7 +153,32 @@ app.get('/load/sp_all', (req, res) => {
 })
 
 //Load Trang Sp HOT là sp có số lần đấu giá nhiều nhất -> sắp GIẢM 10 sp đầu tiên
-app.get('/load/sp_hot', (req, res) => {
+app.get('/user/load/sp_hot', (req, res) => {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`SELECT s.*,p.*
+                    FROM sanpham s, phiendaugia p, tinhtrangphiendg t
+                    WHERE s.masp = p.masp
+                        and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
+                    ORDER BY p.giahientai DESC
+                    limit 8 `
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
+})
+
+app.get('/admin/load/sp_hot', (req, res) => {
     pool.connect(function (err, client, done) {
         if (err) {
             console.log("not able to get connection " + err);
@@ -162,7 +203,32 @@ app.get('/load/sp_hot', (req, res) => {
     });
 })
 //Load Trang Sp HẾT THỜI GIAN ĐẤU GIÁ là sp có thời gian đấu giá sắp hết ASC hoặc DESC
-app.get('/load/sp_hettg', (req, res) => {
+app.get('/user/load/sp_hettg', (req, res) => {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`SELECT s.*,p.*
+                    FROM sanpham s, phiendaugia p, tinhtrangphiendg t
+                    WHERE s.masp = p.masp
+                        and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'
+                    ORDER BY p.thoigiandau ASC
+                    limit 8 `
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
+})
+
+app.get('/admin/load/sp_hettg', (req, res) => {
     pool.connect(function (err, client, done) {
         if (err) {
             console.log("not able to get connection " + err);
@@ -188,7 +254,31 @@ app.get('/load/sp_hettg', (req, res) => {
 })
 
 //Load Trang Sp CÔNG NGHỆ là sp thuộc loại Công nghệ
-app.get('/load/sp_congnghe', (req, res) => {
+app.get('/user/load/sp_congnghe', (req, res) => {
+    console.log("Cookie is " + req.cookies['user_id'])
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`SELECT s.*, p.*
+                    FROM sanpham s, loaisp l, phiendaugia p, tinhtrangphiendg t
+                    WHERE s.loaisp = l.maloaisp and l.tenloai = 'cong nghe' and s.masp = p.masp
+                         and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'`
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
+})
+
+app.get('/admin/load/sp_congnghe', (req, res) => {
     console.log("Cookie is " + req.cookies['user_id'])
     pool.connect(function (err, client, done) {
         if (err) {
@@ -213,7 +303,30 @@ app.get('/load/sp_congnghe', (req, res) => {
 })
 
 //Load Trang Sp Thời trang là sp thuộc loại Thời trang
-app.get('/load/sp_thoitrang', (req, res) => {
+app.get('/user/load/sp_thoitrang', (req, res) => {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`SELECT s.*, p.*
+                    FROM sanpham s, loaisp l, phiendaugia p , tinhtrangphiendg t
+                    WHERE s.loaisp = l.maloaisp and l.tenloai = 'thoi trang' and s.masp = p.masp 
+                    and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'`
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
+})
+
+app.get('/admin/load/sp_thoitrang', (req, res) => {
     pool.connect(function (err, client, done) {
         if (err) {
             console.log("not able to get connection " + err);
@@ -237,7 +350,30 @@ app.get('/load/sp_thoitrang', (req, res) => {
 })
 
 //Load Trang Sp ĐỒ GIA DỤNG là sp thuộc loại do gia dung
-app.get('/load/sp_dogiadung', (req, res) => {
+app.get('/user/load/sp_dogiadung', (req, res) => {
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`SELECT s.*, p.*
+                    FROM sanpham s, loaisp l, phiendaugia p, tinhtrangphiendg t
+                    WHERE s.loaisp = l.maloaisp and l.tenloai = 'do gia dung' and s.masp = p.masp
+                    and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'`
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done(); // huy ket noi
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            });
+    });
+})
+
+app.get('/admin/load/sp_dogiadung', (req, res) => {
     pool.connect(function (err, client, done) {
         if (err) {
             console.log("not able to get connection " + err);
@@ -261,7 +397,7 @@ app.get('/load/sp_dogiadung', (req, res) => {
 })
 
 // Update Thời gian đấu giá mỗi 1s
-app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
+app.get('/user/capNhatThoiGianDau/:id/:time', (req, res) => {
     var id_sp = parseInt(req.params['id'])
     var thoigian = req.params['time']
     pool.connect(function (err, client, done) {
@@ -288,7 +424,7 @@ app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
 
 // Update Tình trạng phiên đấu giá khi hết thời gian + 
 // Update mã phiếu đấu thắng vào table phiendaugia nếu phiên đgđấu giá đó có người đấu giá
-app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
+app.get('/user/capNhatTinhTrangPhien/:maphien', (req, res) => {
     var maphiendg = parseInt(req.params['maphien'])
     var tinhtrangphien = 3       // tên tinhtrangphien = "da dau gia"
     pool.connect(function (err, client, done) {
@@ -348,7 +484,7 @@ app.get('/capNhatTinhTrangPhien/:maphien', (req, res) => {
 })
 
 // Load các sản phẩm mà user đang đấu giá khi nhấn nút Đấu Giá Của Tôi trên header_user
-app.get('/load/daugiacuatoi', (req, res) => {
+app.get('/user/load/daugiacuatoi', (req, res) => {
     console.log("Cookie is " + req.cookies['user_id'])
     var matk = parseInt(req.cookies['user_id'])
     pool.connect(function (err, client, done) {
@@ -382,14 +518,8 @@ app.get('/load/daugiacuatoi', (req, res) => {
     });
 })
 
-
-
-
-
-
-
 // Load thong tin cua user đang đăng nhập 
-app.get('/load/InfoUser', (req,res) =>{
+app.get('/user/load/InfoUser', (req,res) =>{
     console.log("Cookie is " + req.cookies['user_id'])
     var matk = parseInt(req.cookies['user_id'])
     pool.connect(function (err, client, done) {
@@ -427,13 +557,13 @@ app.get('/load/InfoUser', (req,res) =>{
 
 // update lại thông tin user muốn chỉnh sữa
 
-app.get('/update/InfoUser', (req, res) => {
+app.get('/user/update/InfoUser', (req, res) => {
     console.log("Cookie is " + req.cookies['user_id'])
     var matk = parseInt(req.cookies['user_id'])
     //var tendn = req.query.tendn
     var pass1 = req.query.mk1
     var pass2 = req.query.mk2
-    var sdt = parseInt(req.query.sdt)
+    var sdt = req.query.sdt
     var diachi = req.query.diachi
 
     //console.log(tendn);
@@ -444,7 +574,7 @@ app.get('/update/InfoUser', (req, res) => {
             res.status(400).send(err);
         }
         client.query(`update taikhoan
-                      set matkhau = `+pass1+`,sdt =`+sdt+`,diachi = `+diachi+`
+                      set matkhau = '` + pass1 + `', sdt ='` + sdt + `', diachi = '` + diachi + `'
                       WHERE matk = `+matk+``
                 , function (err, result) {
                 //call `done()` to release the client back to the pool
@@ -465,7 +595,7 @@ app.get('/update/InfoUser', (req, res) => {
 
 
 // Load các sản phẩm mà user đấu giá thành công khi nhấn nút Giỏ Hàng trên header_user
-app.get('/load/gioHang', (req, res) => {
+app.get('/user/load/gioHang', (req, res) => {
     console.log("Cookie is " + req.cookies['user_id'])
     var matk = parseInt(req.cookies['user_id'])
     pool.connect(function (err, client, done) {
@@ -500,7 +630,7 @@ app.get('/load/gioHang', (req, res) => {
 })
 
 // khi người dùng muốn xóa 1 sp khi đã đấu giá thành công và hiện trên giỏ hàng
-app.delete('/updateKhongThanhToan/:a', (req, res) => {
+app.delete('/user/updateKhongThanhToan/:a', (req, res) => {
     var maphiendaugia = parseInt(req.params['a'])
     console.log(maphiendaugia)
     pool.connect(function (err, client, done) {
@@ -524,7 +654,7 @@ app.delete('/updateKhongThanhToan/:a', (req, res) => {
 })
 
 // Khi ng dùng nhấn nút thanh toán trong giỏ hàng
-app.get('/thanhToan', (req, res) => {
+app.get('/user/thanhToan', (req, res) => {
     var matk = parseInt(req.cookies['user_id'])
     pool.connect(function (err, client, done) {
         if (err) {
@@ -533,8 +663,9 @@ app.get('/thanhToan', (req, res) => {
         }
 
         client.query(`SELECT ph.*
-                    FROM phieudaugia ph, tinhtrangphieudg t, phiendaugia p
+                    FROM phieudaugia ph, tinhtrangphieudg t, phiendaugia p, tinhtrangphiendg tp
                     WHERE ph.matinhtrang = t.matinhtrangphieudg and t.tentinhtrangphieudg = 'dau gia thanh cong' 
+                    and p.matinhtrang = tp.matinhtrangphiendg and tp.tentinhtrangphiendg = 'da dau gia'
                     and p.maphieudauthang = ph.maphieudg and ph.matk = ` + matk
             , function (err, result) {
                 //call `done()` to release the client back to the pool
@@ -566,7 +697,7 @@ app.get('/thanhToan', (req, res) => {
 })
 
 // Chi tiết sản phẩm
-app.get('/load/chitiet/:id', (req, res) => {
+app.get('/user/load/chitiet/:id', (req, res) => {
     var id_sp = parseInt(req.params['id'])
     pool.connect(function (err, client, done) {
         if (err) {
@@ -589,7 +720,30 @@ app.get('/load/chitiet/:id', (req, res) => {
     });
 })
 
-app.get('/loadtop10/:id', (req, res) => {
+app.get('/admin/load/chitiet/:id', (req, res) => {
+    var id_sp = parseInt(req.params['id'])
+    pool.connect(function (err, client, done) {
+        if (err) {
+            console.log("not able to get connection " + err);
+            res.status(400).send(err);
+        }
+        client.query(`SELECT s.*, p.*, t.giatri
+                    FROM sanpham s, phiendaugia p, thamso t
+                    WHERE s.masp = ` + id_sp + ` and s.masp = p.masp and t.tenthamso = 'delta so tien'`
+            , function (err, result) {
+                //call `done()` to release the client back to the pool
+                done();
+                if (err) {
+                    res.end();
+                    console.log(err);
+                    res.status(400).send(err)
+                }
+                res.json(result.rows)
+            })
+    });
+})
+
+app.get('/user/loadtop10/:id', (req, res) => {
     var id_sp = parseInt(req.params['id'])
     pool.connect(function (err, client, done) {
         if (err) {
@@ -611,7 +765,7 @@ app.get('/loadtop10/:id', (req, res) => {
     });
 })
 ///--------------//////
-app.get('/daugia/:a/:b/:c/:d', (req, res) => {
+app.get('/user/daugia/:a/:b/:c/:d', (req, res) => {
     var gia = parseInt(req.params['a'])
     var pheptinh = req.params['b']
     var giathau = parseInt(req.params['c'])
@@ -630,7 +784,7 @@ app.get('/daugia/:a/:b/:c/:d', (req, res) => {
 
 // Thực hiện đấu giá (QUAN TRỌNG)
 // cập nhật hoặc tạo 1 phiếu đấu giá khi user chọn 1 sp đấu giá
-app.get('/create_update_PhieuDG', (req, res) => {
+app.get('/user/create_update_PhieuDG', (req, res) => {
     var maphien = parseInt(req.query.maphien)
     // var masp =  parseInt(req.query.masp)
     console.log("Cookie is " + req.cookies['user_id'])
@@ -695,8 +849,7 @@ app.get('/create_update_PhieuDG', (req, res) => {
 
 
 //          ADMIN       //
-
-app.get('/load/sp_dadaugia', (req, res) => {
+app.get('/admin/load/sp_dadaugia', (req, res) => {
     pool.connect(function (err, client, done) {
         if (err) {
             console.log("not able to get connection " + err);
@@ -718,7 +871,7 @@ app.get('/load/sp_dadaugia', (req, res) => {
     });
 })
 
-app.get('/load/sp_khongdaugia', (req, res) => {
+app.get('/admin/load/sp_khongdaugia', (req, res) => {
     pool.connect(function (err, client, done) {
         if (err) {
             console.log("not able to get connection " + err);
@@ -740,7 +893,7 @@ app.get('/load/sp_khongdaugia', (req, res) => {
     });
 })
 
-app.get('/donotpay', (req, res) =>{
+app.get('/admin/donotpay', (req, res) =>{
     pool.connect(function(err, client, done){
         if (err) {
             console.log("not able to get connect" + err)
@@ -762,7 +915,7 @@ app.get('/donotpay', (req, res) =>{
     })
 })
 
-app.delete('/delete/:a', (req, res) => {
+app.delete('/admin/delete/:a', (req, res) => {
     var id = parseInt(req.params['a'])
     pool.connect(function (err, client, done) {
         if (err) {
@@ -785,7 +938,7 @@ app.delete('/delete/:a', (req, res) => {
     })
 })
 
-app.get('/createProduct', (req, res) => {
+app.get('/admin/createProduct', (req, res) => {
     //console.log(req.query)
     var tinhtrangphien = 2
     var tensp = req.query.tensp
