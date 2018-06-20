@@ -5,7 +5,7 @@ var pg = require('pg');
 var config = {
     user: 'postgres',
     database: 'daugia', 
-    password: '123456', 
+    password: '123123', 
     port: 5432, 
     max: 10, // max number of connection can be open to database
     idleTimeoutMillis: 300000, // how long a client is allowed to remain idle before being closed
@@ -23,26 +23,28 @@ app.get('/index', (req, res) => {
     res.sendfile('index.html')
 })
 
-var temp = 0
+var temp1 = 0
+var temp2 = 0
 
 app.get('/setCookie/:matk/:type', (req, res, next) => {
     var matk = req.params['matk']
-    temp = req.params['type']
+    if(req.params['type'] == 'user')
+        temp1 = req.params['type']
+    else
+        temp2 = req.params['type']
         
     var expireTime = 3600
     res.cookie('user_id', matk, { expire: new Date() + expireTime })
     res.end("DONE")
 })
 
-
 app.all('/user/*', (req, res, next) => {
-    if(temp == 'user')
+    if(temp1 == 'user')
         next()
 })
 
-
 app.all('/admin/*', (req, res, next) => {
-    if(temp == 'admin')
+    if(temp2 == 'admin')
         next()
 })
 
@@ -397,7 +399,7 @@ app.get('/admin/load/sp_dogiadung', (req, res) => {
 })
 
 // Update Thời gian đấu giá mỗi 1s
-app.get('/user/capNhatThoiGianDau/:id/:time', (req, res) => {
+app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
     var id_sp = parseInt(req.params['id'])
     var thoigian = req.params['time']
     pool.connect(function (err, client, done) {

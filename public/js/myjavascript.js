@@ -126,7 +126,7 @@ function thoiGianGiamChiTiet(data, loaiid) {
 // update xuống postgre sau mỗi 1s
 function capNhatThoigianDG(masp, thoigian) {
     $.ajax({
-        url: '/user/capNhatThoiGianDau/' + masp + '/' + thoigian,
+        url: '/capNhatThoiGianDau/' + masp + '/' + thoigian,
         method: 'get',
         success(data) {
             //console.log(data)
@@ -1134,7 +1134,7 @@ function loadSPKhongTT() {
         url: '/admin/donotpay',
         method: 'get',
         success(data) {
-            $('.tbody3').html("")
+            $('.tbody6').html("")
             var i = 1
             data.forEach(x => {
                 $('.table1').append(
@@ -1216,37 +1216,39 @@ function nutAdmin() {
     var demspcnt_ad = 0
     var demsptt_ad = 0
     var demspdgd_ad = 0
-    $('#btnsphot2').click(function () {
-        $('#insertSP').hide()
-        $('#hot').show()
-        loadSPHotAdmin(demsphot_ad)
-        demsphot_ad++
+    $('#btndwn').click(function(){
+        $('#btnsphot2').click(function () {
+            $('#insertSP').hide()
+            $('#hot').show()
+            loadSPHotAdmin(demsphot_ad)
+            demsphot_ad++
+        })
+    
+        $('#btnspshtg').click(function () {
+            $('#insertSP').hide()
+            $('#hetthoigian').show()
+            loadSPHetThoiGianDauAdmin(demsphtg_ad)
+            demsphtg_ad++
+        })
+    
+        $('#btncongnghe2').click(function () {
+            loadSPCongNgheAdmin(demspcnt_ad)
+            demspcnt_ad++
+        })
+    
+        $('#btndogiadung2').click(function () {
+            $('#insertSP').hide()
+            loadSPDoGiaDungAdmin(demspdgd_ad)
+            demspdgd_ad++
+        })
+    
+        $('#btnthoitrang2').click(function () {
+            $('#insertSP').hide()
+            loadSPThoiTrangAdmin(demsptt_ad)
+            demsptt_ad++
+        })
     })
-
-    $('#btnspshtg').click(function () {
-        $('#insertSP').hide()
-        $('#hetthoigian').show()
-        loadSPHetThoiGianDauAdmin(demsphtg_ad)
-        demsphtg_ad++
-    })
-
-    $('#btncongnghe2').click(function () {
-        $('#insertSP').hide()
-        loadSPCongNgheAdmin(demspcnt_ad)
-        demspcnt_ad++
-    })
-
-    $('#btndogiadung2').click(function () {
-        $('#insertSP').hide()
-        loadSPDoGiaDungAdmin(demspdgd_ad)
-        demspdgd_ad++
-    })
-
-    $('#btnthoitrang2').click(function () {
-        $('#insertSP').hide()
-        loadSPThoiTrangAdmin(demsptt_ad)
-        demsptt_ad++
-    })
+    
 
     $('#btndadaugia').click(function () {
         anALL()
