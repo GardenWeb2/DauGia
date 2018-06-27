@@ -23,26 +23,46 @@ app.get('/index', (req, res) => {
     res.sendfile('index.html')
 })
 
-var temp = 0
+var temp1 = 0
+var temp2 = 0
 
 app.get('/setCookie/:matk/:type', (req, res, next) => {
     var matk = req.params['matk']
-    temp = req.params['type']
+    var loaitk = req.params['type']
+    if(req.params['type'] == 'user')
+        temp1 = loaitk
+    else
+        temp2 = loaitk
         
     var expireTime = 3600
     res.cookie('user_id', matk, { expire: new Date() + expireTime })
+    res.cookie('type_id', loaitk, { expire: new Date() + expireTime })
     res.end("DONE")
 })
 
+// reset cookies về null khi đăng xuất
+app.get('/resetCookies/:type', (req, res) => {
+    if(req.params['type'] == 'user'){
+        temp1 = 'null'
+        console.log(req.params['type'])
+    }
+    else{
+        temp2 = 'null'
+        console.log(req.params['type'])
+    }
+    var expireTime = 3600
+    res.cookie('user_id', null, { expire: new Date() + expireTime })
+    res.cookie('type_id', null, { expire: new Date() + expireTime })
+    res.end("DONE")
+})
 
 app.all('/user/*', (req, res, next) => {
-    if(temp == 'user')
+    if(req.cookies['type_id'] == 'user' || temp1 == 'user')
         next()
 })
 
-
 app.all('/admin/*', (req, res, next) => {
-    if(temp == 'admin')
+    if(req.cookies['type_id'] == 'admin' || temp2 == 'admin')
         next()
 })
 
@@ -71,10 +91,10 @@ app.get('/login', (req, res) => {
                 }
                 else {
                     if (result.rows[0].tenloai == "admin") {
-                        res.send({ status: 'true', user: result.rows[0].matk, type: "admin", username: result.rows[0].tentk });
+                        res.send({ status: 'true', matk: result.rows[0].matk, type: "admin", username: result.rows[0].tentk });
                     }
                     else if (result.rows[0].tenloai == "user") {
-                        res.send({ status: 'true', user: result.rows[0].matk, type: "user", username: result.rows[0].tentk });
+                        res.send({ status: 'true', matk: result.rows[0].matk, type: "user", username: result.rows[0].tentk });
                     }
                 }
             });
@@ -118,7 +138,7 @@ app.get('/signup', (req, res) => {
                                 res.end()
                             }
                             else {
-                                res.send({ status: 'true', matk: result1.rows[0].matk, username: result1.rows[0].tentk })
+                                res.send({ status: 'true', matk: result1.rows[0].matk, username: result1.rows[0].tentk,  type: "user" })
                                 res.end()
                             }
                         })
@@ -126,30 +146,6 @@ app.get('/signup', (req, res) => {
             })
 
     })
-})
-
-//Load Tất cả sản phẩm để chạy hàm setInterval() trong trang chi tiết
-app.get('/load/sp_all', (req, res) => {
-    pool.connect(function (err, client, done) {
-        if (err) {
-            console.log("not able to get connection " + err);
-            res.status(400).send(err);
-        }
-        client.query(`SELECT s.*,p.*
-                    FROM sanpham s, phiendaugia p, tinhtrangphiendg t
-                    WHERE s.masp = p.masp
-                        and p.matinhtrang = t.matinhtrangphiendg and t.tentinhtrangphiendg = 'dang dau gia'  `
-            , function (err, result) {
-                //call `done()` to release the client back to the pool
-                done();
-                if (err) {
-                    res.end();
-                    console.log(err);
-                    res.status(400).send(err)
-                }
-                res.json(result.rows)
-            });
-    });
 })
 
 //Load Trang Sp HOT là sp có số lần đấu giá nhiều nhất -> sắp GIẢM 10 sp đầu tiên
@@ -397,7 +393,7 @@ app.get('/admin/load/sp_dogiadung', (req, res) => {
 })
 
 // Update Thời gian đấu giá mỗi 1s
-app.get('/user/capNhatThoiGianDau/:id/:time', (req, res) => {
+app.get('/capNhatThoiGianDau/:id/:time', (req, res) => {
     var id_sp = parseInt(req.params['id'])
     var thoigian = req.params['time']
     pool.connect(function (err, client, done) {
@@ -743,7 +739,7 @@ app.get('/admin/load/chitiet/:id', (req, res) => {
     });
 })
 
-app.get('/user/loadtop10/:id', (req, res) => {
+app.get('/loadtop10/:id', (req, res) => {
     var id_sp = parseInt(req.params['id'])
     pool.connect(function (err, client, done) {
         if (err) {
@@ -770,6 +766,8 @@ app.get('/user/daugia/:a/:b/:c/:d', (req, res) => {
     var pheptinh = req.params['b']
     var giathau = parseInt(req.params['c'])
     var delta = parseInt(req.params['d'])
+    if(gia < 10 )
+        delta = 2
     if (pheptinh == 'tru' && gia > giathau)
         gia = gia - delta
     else if (pheptinh == 'cong')
@@ -991,6 +989,7 @@ app.get('/admin/createProduct', (req, res) => {
                 var ttp = parseInt(tinhtrangphien)
                 client.query(`insert into phiendaugia(masp,thoigianbd,thoigiandau,giathapnhat,giahientai,maphieudauthang,matinhtrang,thanhtoan)
                             values(`+ masp + `,'` + tgbd + `','` + tgdau + `',` + gia + `,` + gia + `,null,` + ttp + `, false)`)
+                //res.json(masp)
                 res.send("Thêm sản phẩm thành công")
             });
     })
