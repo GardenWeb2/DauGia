@@ -153,8 +153,6 @@ function loadSPHotUser(i, k) {
             $('.sp_hot').html("")
 
             for (var i = 0; i < data.length; i++) {
-                var tagId = "#idhot" + data[i].masp
-                $(tagId).text("")
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     data[i].hinhanh + `" width="300" hight="300">` +
@@ -189,8 +187,6 @@ function loadSPHotAdmin(i, k) {
             $('.sp_hot').html("")
 
             for (var i = 0; i < data.length; i++) {
-                var tagId = "#idhot" + data[i].masp
-                $(tagId).text("")
                 $('.sp_hot').append(
                     `<div class="col-sm-3 col-md-3"><div class="thumbnail" style="height:500"> <img src="./img/` +
                     data[i].hinhanh + `" width="300" hight="300">` + 
@@ -386,7 +382,7 @@ function loadSPDoGiaDungAdmin(i, k) {
             anRandom()
             $('#header_admin').show()
             $('#dogiadung').show()
-            // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+            // Không được gộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
             $('.sp_dogiadung').html("")
             for (var i = 0; i < data.length; i++) {
                 $('.sp_dogiadung').append(
@@ -419,7 +415,7 @@ function loadSPThoiTrangUser(i, k) {
             anALL()
             anRandom()
             $('#thoitrang').show()
-            // Không đượcgộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
+            // Không được gộp chung trên hàm anALL() nếu không nó sẽ không giảm khi ta chuyển sang button khác
             $('.sp_thoitrang').html("")
             for (var i = 0; i < data.length; i++) {
                 $('.sp_thoitrang').append(
@@ -582,151 +578,7 @@ $(document).ready(() => {
     nutAdmin()      // các nút trên header_admin bên trang admin
 })
 
-function loadDauGiaCuaToi() {
-    $.ajax({
-        url: '/user/load/daugiacuatoi',
-        method: 'get',
-        success(data) {
-            var i = 1
-            $('.tbody4').html("")
-            if (data.status == "true") {
-                data.detail.forEach(x => {
-                    $('.table').append(
-                        `<tr>` +
-                        `<td>` + `<p>` + i + `</p>` + `</td>` +
-                        `<td>` + `<p>` + x.info + `</p>` + `<td>` +
-                        `<img src="./img/` + x.hinhanh + `"width="100" hight="100">` +
-                        `<td>` + x.giadau + ` K </td>` +
-                        `<td>` + x.giahientai + ` K </td>` +
-                        `<td>` + x.tentinhtrangphieudg + `</td>` +
-                        `</tr>`
-                    )
-                    i++
-                })
-            }
-            else {
-                $('.table').html("")
-            }
-        },
-        error(err) {
-            $('.lichSuDG').status(404)
-        },
-    })
-}
-
-// Thogn tin cua tai khoan dang dang nhap
-function loadInfoUser() {
-    $.ajax({
-        url: '/user/load/InfoUser',
-        method: 'get',
-        success(data) {
-            if (data.status == "true") {
-                //console.log(data.detail[0].tentk);
-                $('#Ten').val(data.detail[0].tentk);
-                $('#SDT').val(data.detail[0].sdt);
-                $('#DiaChi').val(data.detail[0].diachi);
-            }
-            else {
-                console.log(err)
-            }
-        },
-        error(err) {
-            console.log(err)
-        },
-    })
-}
-
-// update lai thong tin cua user khi chinh sua
-function UpdateInfoUser() {
-    //var tendn =  $('#TenUser').val();
-    $('#TenUser').text($('#idUserHeader').text)
-    var mk1 = $('#pass1').val();
-    var mk2 = $('#pass2').val();
-    var sdt = $('#updateSDT').val();
-    var diachi = $('#updateDiaChi').val();
-
-    $.ajax({
-        url: '/user/update/InfoUser',
-        method: 'get',
-        data: {
-            //tendn:tendn,
-            mk1: mk1,
-            mk2: mk2,
-            sdt: sdt,
-            diachi: diachi
-        },
-        success(data) {
-            loadlaiformChinhSua()
-            alert(data)
-        }
-    })
-
-}
-
-function loadlaiformChinhSua() {
-    $('#TenUser').val("");
-    $('#pass1').val("");
-    $('#pass2').val("");
-    $('#updateSDT').val("");
-    $('#updateDiaChi').val("");
-}
-
-// Giỏ hàng của người dùng
-function loadGioHang() {
-    $.ajax({
-        url: '/user/load/gioHang',
-        method: 'get',
-        success(data) {
-            var tongtien = 0
-            $('.tbody3').html("")
-            $('.tongTien').html("")
-            if (data.status == "true") {
-                data.detail.forEach(x => {
-                    tongtien += parseInt(x.giadau)
-                    $('.tableShopping').append(
-                        `<tr>` +
-                        `<td class="col-sm-2">` + x.info + `</td>
-                            <td class="col-sm-2">   1 </td>
-                            <td class="col-sm-2">`+ x.giadau + `000 </td>
-                            <td class="col-sm-2">  <button class="btn-default" onclick="khongMua(this)" value="` + x.maphiendg + `"> Xóa </button>  </td>
-                         </tr>`
-                    )
-                })
-                $('.tongTien').append(
-                    `<tr>
-                        <td>
-                            <h4>Thành tiền:         ` + tongtien.toString() + `000 VNĐ </h4>
-                        </td>
-                    </tr> `
-                )
-                $('.luachon').show()
-            }
-            else {
-                $('.tableShopping').html("")
-            }
-        },
-        error(err) {
-            console.log(err)
-        },
-    })
-}
-
-// khi người dùng nhấn nút thanh toán trong giỏ hàng,
-// sẽ đổi cột thanhtian trong phiendaugia thành 'true'
-function thanhToan() {
-    $.ajax({
-        url: '/user/thanhToan',
-        method: 'get',
-        success(data) {
-            $('#idGioHang').html("")
-            alert(data)
-        },
-        error(err) {
-            console.log(err)
-        },
-    })
-}
-
+// tạo ra trang chi tiết 1 sp
 function xemChitietUser(e, i) {
     var id = $(e).val()
     var solan = i
@@ -825,6 +677,7 @@ function xemChitietUser(e, i) {
     loadTop10(id)
 }
 
+// Top 10 người mua 1 sp, xuất hiện trong trang chi tiết
 function loadTop10(e) {
     var id = $(e).val()
     $.ajax({
@@ -862,6 +715,7 @@ function loadTop10(e) {
     })
 }
 
+// khi người dùng thay đổi ( tăng hoặc giảm giá tiền đấu )
 function giaTienThayDoi(e) {
     var giadau = $('#giadau').val()
     var loai = $(e).val()
@@ -880,6 +734,7 @@ function giaTienThayDoi(e) {
     })
 }
 
+// khi nhấn nút đấu giá trong trang chi tiết sp
 function dauGia(e) {
     var id = $(e).val()
     var maphiendg = $('#idmaPhienDG').val()
@@ -904,6 +759,129 @@ function dauGia(e) {
     // xemChitiet(id, "user")
 }
 
+// Thông tin cua tai khoan dang dang nhap
+function loadInfoUser() {
+    $.ajax({
+        url: '/user/load/InfoUser',
+        method: 'get',
+        success(data) {
+            if (data.status == "true") {
+                //console.log(data.detail[0].tentk);
+                $('#Ten').val(data.detail[0].tentk);
+                $('#SDT').val(data.detail[0].sdt);
+                $('#DiaChi').val(data.detail[0].diachi);
+            }
+            else {
+                console.log(err)
+            }
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
+}
+
+// update lai thong tin cua user khi chinh sua
+function UpdateInfoUser() {
+    //var tendn =  $('#TenUser').val();
+    $('#TenUser').text($('#idUserHeader').text)
+    var mk1 = $('#pass1').val();
+    var mk2 = $('#pass2').val();
+    var sdt = $('#updateSDT').val();
+    var diachi = $('#updateDiaChi').val();
+
+    $.ajax({
+        url: '/user/update/InfoUser',
+        method: 'get',
+        data: {
+            //tendn:tendn,
+            mk1: mk1,
+            mk2: mk2,
+            sdt: sdt,
+            diachi: diachi
+        },
+        success(data) {
+            loadlaiformChinhSua()
+            alert(data)
+        }
+    })
+
+}
+
+function loadlaiformChinhSua() {
+    $('#TenUser').val("");
+    $('#pass1').val("");
+    $('#pass2').val("");
+    $('#updateSDT').val("");
+    $('#updateDiaChi').val("");
+}
+
+// Giỏ hàng của người dùng
+function loadGioHang() {
+    $.ajax({
+        url: '/user/load/gioHang',
+        method: 'get',
+        success(data) {
+            var tongtien = 0
+            $('.tbody3').html("")
+            $('.tableShopping').html("")
+            $('.tongTien').html("")
+            if (data.status == "true") {
+                $('.tableShopping').append(
+                    `<tr>
+                        <th>Sản phẩm</th>
+                        <th>Số Lượng</th>
+                        <th>Đơn Giá</th>
+                        <th> Xóa Sản Phẩm </th>
+                    </tr>`
+                )
+                data.detail.forEach(x => {
+                    tongtien += parseInt(x.giadau)
+                    $('.tableShopping').append(
+                        `<tr>` +
+                        `<td class="col-sm-2">` + x.info + `</td>
+                            <td class="col-sm-2">   1 </td>
+                            <td class="col-sm-2">`+ x.giadau + `000 </td>
+                            <td class="col-sm-2">  <button class="btn-default" onclick="khongMua(this)" value="` + x.maphiendg + `"> Xóa </button>  </td>
+                         </tr>`
+                    )
+                })
+                $('.tongTien').append(
+                    `<tr>
+                        <td>
+                            <h4>Thành tiền:         ` + tongtien.toString() + `000 VNĐ </h4>
+                        </td>
+                    </tr> `
+                )
+                $('.luachon').show()
+            }
+            else {
+                $('.tableShopping').html("")
+            }
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
+}
+
+// khi người dùng nhấn nút thanh toán trong giỏ hàng,
+// sẽ đổi cột thanhtoan trong phiendaugia thành 'true'
+function thanhToan() {
+    $.ajax({
+        url: '/user/thanhToan',
+        method: 'get',
+        success(data) {
+            $('#idGioHang').html("")
+            alert(data)
+        },
+        error(err) {
+            console.log(err)
+        },
+    })
+}
+
+// khi người dùng muốn xóa sp trong giỏ hàng
 function khongMua(e) {
     var maphiendg = $(e).val()
     $.ajax({
@@ -920,6 +898,51 @@ function khongMua(e) {
     })
 }
 
+function loadDauGiaCuaToi() {
+    $.ajax({
+        url: '/user/load/daugiacuatoi',
+        method: 'get',
+        success(data) {
+            var i = 1
+            $('.tbody4').html("")
+            $('.tableDauGiaCuaToi').html("")
+            $('.tbodytop10').hide()
+            if (data.status == "true") {
+                $('.tableDauGiaCuaToi').append(
+                    `<tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Hình ảnh</th>
+                        <th>Giá đấu của bạn </th>
+                        <th>Giá đấu hiện tại </th>
+                        <th>Tình trạng đấu </th>
+                    </tr>`
+                )
+                data.detail.forEach(x => {
+                    $('.tableDauGiaCuaToi').append(
+                        `<tr>` +
+                        `<td>` + `<p>` + i + `</p>` + `</td>` +
+                        `<td>` + `<p>` + x.info + `</p>` + `<td>` +
+                        `<img src="./img/` + x.hinhanh + `"width="100" hight="100">` +
+                        `<td>` + x.giadau + ` K </td>` +
+                        `<td>` + x.giahientai + ` K </td>` +
+                        `<td>` + x.tentinhtrangphieudg + `</td>` +
+                        `</tr>`
+                    )
+                    i++
+                })
+            }
+            else {
+                $('.tableDauGiaCuaToi').html("")
+            }
+        },
+        error(err) {
+            $('.lichSuDG').status(404)
+        },
+    })
+}
+
+// khi nhấn nút đăng xuất
 function resetCookies(loaitk) {
     var type = loaitk
     $.ajax({
