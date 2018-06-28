@@ -762,13 +762,13 @@ app.get('/loadtop10/:id', (req, res) => {
 })
 ///--------------//////
 app.get('/user/daugia/:a/:b/:c/:d', (req, res) => {
-    var gia = parseInt(req.params['a'])
+    var gia = parseInt(req.params['a'])     // giá trong ô chọn lựa tăng giảm
     var pheptinh = req.params['b']
-    var giathau = parseInt(req.params['c'])
+    var giathau = parseInt(req.params['c']) // giá hiện tại của sp
     var delta = parseInt(req.params['d'])
     if(gia < 10 )
         delta = 2
-    if (pheptinh == 'tru' && gia > giathau)
+    if (pheptinh == 'tru' && gia > giathau + 1)
         gia = gia - delta
     else if (pheptinh == 'cong')
         gia = gia + delta
